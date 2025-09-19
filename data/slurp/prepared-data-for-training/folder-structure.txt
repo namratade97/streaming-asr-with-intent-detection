@@ -1,0 +1,82 @@
+Following is the folder structure we used in our experiments, to store our training data for SLURP.
+This is compatible with icefall's scripts and our kubernetes config .yaml files.
+
+organized_slurp_data_pods_lower/
+├── audio
+│   ├── test
+|   |   |── audio1--*.flac
+|   |   |── audio2--*.flac
+│   ├── train
+|   |   |── audio3--*.flac
+|   |   |── audio4--*.flac
+│   └── val
+|   |   |── audio5--*.flac
+|   |   |── audio6--*.flac
+├
+|
+└── data
+    ├── base_libri_model_variation1
+    ├── base_libri_model_variation2
+    |
+    ├── fbank
+    |
+    ├── lang_bpe_500_tokenizer_model
+    ├── lang_bpe_500_multisource_tokenizer_model
+    ├── lang_bpe_592_tokenizer_model
+    |
+    ├── manifests
+
+
+File Structure of 'fbank' folder:
+
+── fbank
+│   ├── slurp_cuts_test.jsonl
+│   ├── slurp_cuts_train.jsonl
+│   ├── slurp_cuts_val.jsonl
+│   ├── slurp_feats_test
+│   │   ├── feats-0.lca
+│   │   ├── feats-1.lca
+│   │   ├── feats-2.lca
+│   │   └── feats-3.lca
+│   ├── slurp_feats_test.lca
+│   ├── slurp_feats_train
+│   │   ├── feats-0.lca
+│   │   ├── feats-1.lca
+│   │   ├── feats-2.lca
+│   │   └── feats-3.lca
+│   ├── slurp_feats_train.lca
+│   ├── slurp_feats_val
+│   │   ├── feats-0.lca
+│   │   ├── feats-1.lca
+│   │   ├── feats-2.lca
+│   │   └── feats-3.lca
+│   └── slurp_feats_val.lca
+
+
+File Structure of 'manifests' folder:
+
+── manifests
+│   ├── test_recordings.jsonl
+│   ├── test_supervisions.jsonl
+│   ├── train_recordings.jsonl
+│   ├── train_supervisions.jsonl
+│   ├── val_recordings.jsonl
+│   └── val_supervisions.jsonl
+
+
+Sample file structure of 'base_libri_*' folder to store base model trained on ASR task:
+
+── base_libri_model_multisource33
+│   ├── best-train-200epoch.pt
+│   ├── best-train-loss-new.pt
+│   ├── best-val-200epoch.pt
+│   ├── best-valid-21-41-avg.pt
+│   ├── best-valid-loss-new.pt
+│   ├── best-valid-loss.pt
+│   └── best-valid-new.pt
+
+Sample file structure of 'lang_bpe*' folder to save tokenizer models:
+
+── lang_bpe_592
+│   ├── libri_intent_592.model
+│   └── libri_intent_592.txt
