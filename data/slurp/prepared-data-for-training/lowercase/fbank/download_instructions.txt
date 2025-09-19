@@ -3,3 +3,28 @@ You can download it here:
 https://drive.google.com/file/d/1yAy_CkZsBwNjJr6hg2Nlrh_h5y_kBy8W/view?usp=sharing
 
 You need to replace the 'slurp_cuts_*.jsonl' files from the extracted fbank folder with their lowercase alternatives already present in this folder.
+
+File Structure of 'fbank' folder for reference:
+
+── fbank
+│   ├── slurp_cuts_test.jsonl
+│   ├── slurp_cuts_train.jsonl
+│   ├── slurp_cuts_val.jsonl
+│   ├── slurp_feats_test
+│   │   ├── feats-0.lca
+│   │   ├── feats-1.lca
+│   │   ├── feats-2.lca
+│   │   └── feats-3.lca
+│   ├── slurp_feats_test.lca
+│   ├── slurp_feats_train
+│   │   ├── feats-0.lca
+│   │   ├── feats-1.lca
+│   │   ├── feats-2.lca
+│   │   └── feats-3.lca
+│   ├── slurp_feats_train.lca
+│   ├── slurp_feats_val
+│   │   ├── feats-0.lca
+│   │   ├── feats-1.lca
+│   │   ├── feats-2.lca
+│   │   └── feats-3.lca
+│   └── slurp_feats_val.lca
