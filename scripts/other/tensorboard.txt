@@ -1,0 +1,39 @@
+(venv) nde@dev-cailan-nde:/disk1/polaris_intent_detection$ tensorboard --bind_all --logdir tensorboard
+TensorFlow installation not found - running with reduced feature set.
+TensorBoard 2.14.0 at http://dev-cailan-nde.private.development.oraclevcn.com:6006/ (Press CTRL+C to quit)
+
+######################################################################################################################################################
+
+to kill:
+pkill -u nde -f tensorboard
+(venv) nde@dev-cailan-nde:/disk1/polaris_intent_detection/multisource/tmp$ ps -u nde | grep tensorboard
+20401 pts/4    00:05:41 tensorboard
+(venv) nde@dev-cailan-nde:/disk1/polaris_intent_detection/multisource/tmp$ ps aux | grep tensorboard
+nde      11126  0.0  0.0 112816   976 pts/7    S+   12:08   0:00 grep --color=auto tensorboard
+nde      20401  0.0  0.1 1163644 75292 pts/4   Sl+  Mar14   5:41 /disk1/venv/bin/python /disk1/venv/bin/tensorboard --bind_all --logdir .
+(venv) nde@dev-cailan-nde:/disk1/polaris_intent_detection/multisource/tmp$ pkill -u nde -f tensorboard
+
+######################################################################################################################################################
+
+(venv) nde@dev-cailan-shared-2-ol9:/disk1/nde$ unset PYENV_VERSION
+(venv) nde@dev-cailan-shared-2-ol9:/disk1/nde$ unset PYENV_ROOT
+(venv) nde@dev-cailan-shared-2-ol9:/disk1/nde$ export PATH=/usr/bin:$PATH
+(venv) nde@dev-cailan-shared-2-ol9:/disk1/nde$ hash -r
+(venv) nde@dev-cailan-shared-2-ol9:/disk1/nde$ cd /disk1/nde/polaris_intent_detection
+(venv) nde@dev-cailan-shared-2-ol9:/disk1/nde/polaris_intent_detection$ rm -rf .venv_tensorboard
+(venv) nde@dev-cailan-shared-2-ol9:/disk1/nde/polaris_intent_detection$ /usr/bin/python3 -m venv .venv_tensorboard
+(venv) nde@dev-cailan-shared-2-ol9:/disk1/nde/polaris_intent_detection$ source .venv_tensorboard/bin/activate
+(.venv_tensorboard) nde@dev-cailan-shared-2-ol9:/disk1/nde/polaris_intent_detection$ python -c "import ssl; print(ssl.OPENSSL_VERSION)"
+OpenSSL 3.2.2 4 Jun 2024
+(.venv_tensorboard) nde@dev-cailan-shared-2-ol9:/disk1/nde/polaris_intent_detection$ pip install --upgrade pip
+Looking in indexes: https://nexus.melodis.com/repository/soundhound-pypi-group/simple, https://download.pytorch.org/whl/cpu
+Requirement already satisfied: pip in ./.venv_tensorboard/lib/python3.9/site-packages (21.3.1)
+Collecting pip
+  Using cached https://nexus.melodis.com/repository/soundhound-pypi-group/packages/pip/25.0.1/pip-25.0.1-py3-none-any.whl (1.8 MB)
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 21.3.1
+    Uninstalling pip-21.3.1:
+      Successfully uninstalled pip-21.3.1
+Successfully installed pip-25.0.1
+(.venv_tensorboard) nde@dev-cailan-shared-2-ol9:/disk1/nde/polaris_intent_detection$ pip install tensorboard
