@@ -1,0 +1,367 @@
+######################################################################################################################################################
+
+docker pull ghcr.io/k2-fsa/icefall:cpu-py3.9-torch2.4.0-v20240905
+docker run -it --rm -v /disk1/polaris_intent_detection:/workspace ghcr.io/k2-fsa/icefall:cpu-py3.9-torch2.4.0-v20240905 /bin/bash
+cd /workspace
+python icefall/egs/librispeech/ASR/zipformer/train_slurp.py
+
+######################################################################################################################################################
+
+docker build -f icefall/docker/zipformer_slurp_streaming.dockerfile -t docker.melodis.com/soundhound/zipformer_with_slurp_streaming .
+docker tag docker.melodis.com/soundhound/zipformer_with_slurp_streaming:latest docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v1decode
+docker push docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v1decode
+
+######################################################################################################################################################
+
+nde@dev-cailan-shared-2-ol9:/disk1/nde/polaris_intent_detection$ curl -s "https://docker.melodis.com/v2/soundhound/zipformer_with_slurp_streaming/tags/list" | jq .
+{
+  "name": "soundhound/zipformer_with_slurp_streaming",
+  "tags": [
+    "latest",
+    "v1",
+    "v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14",
+    "v15",
+    "v16",
+    "v17",
+    "v17_slurptokenizer_added_intent",
+    "v17_slurptokenizer_withpredefinedintent",
+    "v18",
+    "v19_context8",
+    "v1decode",
+    "v2",
+    "v20_contxt8",
+    "v20lcs512",
+    "v21stokenizercontxt8",
+    "v22lcs512stokenizer",
+    "v22lcs512stokenizer2",
+    "v22lcs512stokenizernew",
+    "v23",
+    "v23slurptokenizer_lcs512contxt4",
+    "v24_IntentLossMasked",
+    "v24_maskedintentloss270_lcs512",
+    "v24_maskedintentloss_lcs512_libri15",
+    "v24dropout1",
+    "v24dropout2",
+    "v24dropout3",
+    "v24dropout4",
+    "v25_intent270_logitnorm",
+    "v25intentloss",
+    "v25intentloss-scale",
+    "v25intentloss15",
+    "v25intentloss30",
+    "v25intentloss5",
+    "v26",
+    "v26_multi_encerror",
+    "v26_multi_encerror_intentscale90",
+    "v26_multisource",
+    "v26_multisource_slurp",
+    "v27_get_enc_intents",
+    "v27_giga",
+    "v28_freeze_decoder",
+    "v28_multisource",
+    "v29_xai",
+    "v29_xai_framealign",
+    "v2decode",
+    "v2decodedebug",
+    "v3",
+    "v30_xai",
+    "v31_mix_slurplibri",
+    "v31_mix_slurplibri_morelibri3",
+    "v32_nonlinear_classification_head",
+    "v33_unfreeze_more",
+    "v34_freezeenc_encintent",
+    "v35_unfreezeallenc",
+    "v36_normal_encintent",
+    "v37_focalloss",
+    "v38clshead",
+    "v38clshead_biggerMLP",
+    "v38clshead_biggerMLP_v2",
+    "v39_base_libri_slurp",
+    "v3debug",
+    "v3debug2",
+    "v3debug3",
+    "v3decodedebug",
+    "v4",
+    "v40_conv",
+    "v5",
+    "v592scratch",
+    "v6",
+    "v7debug",
+    "v8debug",
+    "v8ru",
+    "v9",
+    "v9500",
+    "vexp2",
+    "vexp2-1",
+    "vexp2-2",
+    "vexp2-3",
+    "vlibrionslurp",
+    "vnew6",
+    "vnew7juc"
+  ]
+}
+
+
+######################################################################################################################################################
+
+nde@dev-cailan-shared-2-ol9:/disk1/nde/polaris_intent_detection$ docker images
+REPOSITORY                                                           TAG                                 IMAGE ID       CREATED         SIZE
+soundhound-languages                                                 omorozov-dev                        8c3c1254dd72   4 hours ago     27.6GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         latest                              2a31c6ca4988   24 hours ago    24.8GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v40_conv                            2a31c6ca4988   24 hours ago    24.8GB
+<none>                                                               <none>                              d729b3bf2a8d   24 hours ago    24.8GB
+houndify-mcp                                                         latest                              92c276a58427   2 days ago      1.65GB
+<none>                                                               <none>                              504945c8ecc2   2 days ago      1.65GB
+<none>                                                               <none>                              2cbb35bb6387   4 days ago      24.8GB
+<none>                                                               <none>                              5efdf0fdd38a   4 days ago      24.8GB
+<none>                                                               <none>                              bd8481aca01a   4 days ago      24.8GB
+<none>                                                               <none>                              5f94b99b6a21   4 days ago      24.8GB
+<none>                                                               <none>                              e774f6e49315   4 days ago      24.8GB
+<none>                                                               <none>                              f39e9b6c5fc5   5 days ago      24.8GB
+<none>                                                               <none>                              c954d8434597   5 days ago      24.8GB
+<none>                                                               <none>                              6d844f7cb851   5 days ago      24.8GB
+<none>                                                               <none>                              4891b0199c7e   5 days ago      24.8GB
+<none>                                                               <none>                              f623275b8516   5 days ago      24.8GB
+<none>                                                               <none>                              91f37db25993   5 days ago      24.8GB
+docker.melodis.com/houndify-mcp/houndify-mcp                         v1.0.1                              c482b99ba8d2   5 days ago      518MB
+<none>                                                               <none>                              d57cd2d5e63a   6 days ago      24.8GB
+<none>                                                               <none>                              fc269fe40f8a   6 days ago      24.8GB
+<none>                                                               <none>                              e131798ce5f3   7 days ago      24.8GB
+<none>                                                               <none>                              c3d04c39bc50   7 days ago      24.8GB
+<none>                                                               <none>                              c570be020c50   7 days ago      24.8GB
+<none>                                                               <none>                              62e73e986957   7 days ago      24.8GB
+<none>                                                               <none>                              5c7f8a0bb027   7 days ago      24.8GB
+<none>                                                               <none>                              b8cfb149b17d   7 days ago      24.8GB
+<none>                                                               <none>                              48b04b15fff8   7 days ago      24.8GB
+<none>                                                               <none>                              d046f325740e   8 days ago      24.8GB
+<none>                                                               <none>                              87d01f5dba9f   8 days ago      24.8GB
+<none>                                                               <none>                              2d7bfabc7131   8 days ago      24.8GB
+<none>                                                               <none>                              1e70feed9591   8 days ago      24.8GB
+<none>                                                               <none>                              8c521fa33cbc   8 days ago      24.8GB
+<none>                                                               <none>                              f2bb493e7af6   8 days ago      24.8GB
+<none>                                                               <none>                              afab219a1da9   8 days ago      24.8GB
+<none>                                                               <none>                              01fadcfbf49a   8 days ago      24.8GB
+<none>                                                               <none>                              bbb8a7679958   8 days ago      24.8GB
+<none>                                                               <none>                              eff1242fed93   8 days ago      24.8GB
+<none>                                                               <none>                              589691dde8d2   8 days ago      24.8GB
+<none>                                                               <none>                              0021ee871866   9 days ago      24.8GB
+<none>                                                               <none>                              23ee5363c466   9 days ago      24.8GB
+<none>                                                               <none>                              7abfe15f14c0   9 days ago      24.8GB
+<none>                                                               <none>                              be325b401bf5   9 days ago      24.8GB
+<none>                                                               <none>                              e3663c38d699   9 days ago      24.8GB
+<none>                                                               <none>                              8cff0e3da2f6   10 days ago     24.8GB
+<none>                                                               <none>                              bfcc60dc58dc   10 days ago     24.8GB
+<none>                                                               <none>                              9051606ea22b   10 days ago     24.8GB
+<none>                                                               <none>                              7290b2a2dd9c   13 days ago     24.8GB
+<none>                                                               <none>                              84182293e850   13 days ago     24.8GB
+<none>                                                               <none>                              50e35e671c1c   13 days ago     32.9GB
+<none>                                                               <none>                              56f3c70a2293   13 days ago     32.9GB
+<none>                                                               <none>                              505189ed41c8   13 days ago     32.9GB
+<none>                                                               <none>                              6ca2e1a726b8   2 weeks ago     32.9GB
+<none>                                                               <none>                              e2688aef0484   2 weeks ago     32.9GB
+<none>                                                               <none>                              9dd27c0eddc0   2 weeks ago     32.9GB
+<none>                                                               <none>                              ab24531f4c36   2 weeks ago     32.9GB
+<none>                                                               <none>                              6be48f6f5082   2 weeks ago     43.7GB
+<none>                                                               <none>                              ab85e536d7e0   2 weeks ago     43.7GB
+<none>                                                               <none>                              1b5ee092cfc3   2 weeks ago     32.9GB
+<none>                                                               <none>                              a6b91b842ec8   2 weeks ago     32.9GB
+<none>                                                               <none>                              0422cb5351c2   2 weeks ago     32.9GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v39_base_libri_slurp                affea5ecb73e   2 weeks ago     14GB
+<none>                                                               <none>                              38ec6f5a421f   2 weeks ago     14GB
+<none>                                                               <none>                              3cb45884ee75   2 weeks ago     14GB
+<none>                                                               <none>                              21db4ce3c06a   2 weeks ago     14GB
+<none>                                                               <none>                              6e33f0b5efdf   2 weeks ago     14GB
+<none>                                                               <none>                              20ac68af96e1   2 weeks ago     14GB
+<none>                                                               <none>                              f6c903622790   2 weeks ago     14GB
+<none>                                                               <none>                              79d76f4a70e6   2 weeks ago     14GB
+<none>                                                               <none>                              99a4b37770bc   3 weeks ago     14GB
+<none>                                                               <none>                              0a78fade5bc0   3 weeks ago     14GB
+<none>                                                               <none>                              f05644a896f0   3 weeks ago     14GB
+<none>                                                               <none>                              1c9ed5688621   3 weeks ago     14GB
+<none>                                                               <none>                              72ddaa30dfe9   3 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v38clshead_biggerMLP_v2             3baa6b0c28c0   3 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v38clshead_biggerMLP                fa33bba991c8   3 weeks ago     14GB
+<none>                                                               <none>                              4e8c8b1e91ab   3 weeks ago     14GB
+<none>                                                               <none>                              1ed20a0cafac   3 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v38clshead                          a7e9503b098f   3 weeks ago     14GB
+<none>                                                               <none>                              a9bf5761e728   3 weeks ago     14GB
+<none>                                                               <none>                              6cf771119d1b   4 weeks ago     14GB
+<none>                                                               <none>                              f92f67891fc4   4 weeks ago     14GB
+<none>                                                               <none>                              0a1a727b28f1   4 weeks ago     14GB
+<none>                                                               <none>                              e4bb97c595c2   4 weeks ago     14GB
+<none>                                                               <none>                              b6d8050ef59e   4 weeks ago     14GB
+<none>                                                               <none>                              bc62912abef2   4 weeks ago     14GB
+<none>                                                               <none>                              2981a2a9381c   4 weeks ago     14GB
+<none>                                                               <none>                              4151fba6c6d6   4 weeks ago     14GB
+<none>                                                               <none>                              e8f2c7a894cb   4 weeks ago     14GB
+<none>                                                               <none>                              1ce141317255   4 weeks ago     14GB
+<none>                                                               <none>                              6890ffaddc08   4 weeks ago     14GB
+<none>                                                               <none>                              610e84931b5d   4 weeks ago     14GB
+<none>                                                               <none>                              8e22e28567a3   4 weeks ago     14GB
+<none>                                                               <none>                              338b8a1a8471   4 weeks ago     14GB
+<none>                                                               <none>                              d4283883664d   4 weeks ago     14GB
+<none>                                                               <none>                              ea26ebaab934   4 weeks ago     14GB
+<none>                                                               <none>                              c286f122ca81   4 weeks ago     14GB
+<none>                                                               <none>                              6d5fef2c5b06   4 weeks ago     14GB
+<none>                                                               <none>                              92720d765453   4 weeks ago     14GB
+<none>                                                               <none>                              1e81731d3221   4 weeks ago     14GB
+<none>                                                               <none>                              0406bfd3a0f7   4 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v37_focalloss                       ee3a46150780   4 weeks ago     14GB
+<none>                                                               <none>                              1cde44dcc8cb   4 weeks ago     14GB
+<none>                                                               <none>                              30d35f8f4ea8   4 weeks ago     14GB
+<none>                                                               <none>                              6133fd37013a   4 weeks ago     14GB
+<none>                                                               <none>                              4d76fb4457f4   4 weeks ago     14GB
+<none>                                                               <none>                              eaefe3086ace   4 weeks ago     14GB
+<none>                                                               <none>                              93bef4313512   4 weeks ago     14GB
+<none>                                                               <none>                              24d84afb6706   4 weeks ago     14GB
+<none>                                                               <none>                              bf573b036edb   4 weeks ago     14GB
+<none>                                                               <none>                              1cac75c8668a   4 weeks ago     14GB
+<none>                                                               <none>                              b58ba38e1d60   4 weeks ago     14GB
+<none>                                                               <none>                              06f71c122cb9   4 weeks ago     14GB
+<none>                                                               <none>                              e4c4521b8298   4 weeks ago     14GB
+<none>                                                               <none>                              2ec579e2ef71   4 weeks ago     14GB
+<none>                                                               <none>                              8b6e476c617d   4 weeks ago     14GB
+<none>                                                               <none>                              3b26a298290f   4 weeks ago     14GB
+<none>                                                               <none>                              1a5b7efea1be   4 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v36_normal_encintent                31d9a284c2b2   5 weeks ago     14GB
+<none>                                                               <none>                              27a79c154b57   5 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v35_unfreezeallenc                  69bdc5c644d2   6 weeks ago     14GB
+<none>                                                               <none>                              8a5f0b03d59c   6 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v34_freezeenc_encintent             d1bd3f9b463a   6 weeks ago     14GB
+<none>                                                               <none>                              829155d4e9e9   6 weeks ago     14GB
+<none>                                                               <none>                              78e115508497   6 weeks ago     14GB
+<none>                                                               <none>                              6a4c9fdf904c   6 weeks ago     14GB
+<none>                                                               <none>                              dea36f6c236f   6 weeks ago     14GB
+<none>                                                               <none>                              ab2ef8680719   6 weeks ago     14GB
+<none>                                                               <none>                              cbed8997024c   6 weeks ago     14GB
+<none>                                                               <none>                              36e65d878277   6 weeks ago     14GB
+<none>                                                               <none>                              920d0385a2c9   6 weeks ago     14GB
+<none>                                                               <none>                              2513c4c6c4d5   6 weeks ago     14GB
+almalinux                                                            9                                   192e2ba3e286   6 weeks ago     272MB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v30_xai                             cdf2dc87a573   7 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v32_nonlinear_classification_head   898aebba2b2f   8 weeks ago     14GB
+<none>                                                               <none>                              0bdb23ff1609   8 weeks ago     14GB
+<none>                                                               <none>                              5527f09a4373   8 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v33_unfreeze_more                   b1bb6a687795   8 weeks ago     14GB
+<none>                                                               <none>                              0726bcb63dfb   8 weeks ago     14GB
+<none>                                                               <none>                              d8fcb8a9480c   8 weeks ago     14GB
+<none>                                                               <none>                              31f127e036dd   8 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v31_mix_slurplibri_morelibri3       8d29815a4d83   8 weeks ago     14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v31_mix_slurplibri                  a04f57e92688   8 weeks ago     14GB
+<none>                                                               <none>                              b36d80716255   2 months ago    14GB
+<none>                                                               <none>                              aadea510467f   2 months ago    14GB
+<none>                                                               <none>                              8383c4e5c9ad   2 months ago    14GB
+<none>                                                               <none>                              b9598527b6a4   2 months ago    14GB
+<none>                                                               <none>                              d1c19b29e2fc   2 months ago    14GB
+<none>                                                               <none>                              4c5552c6a863   2 months ago    14GB
+<none>                                                               <none>                              1b7fd4cd8356   2 months ago    14GB
+<none>                                                               <none>                              dd0cbd1771ba   2 months ago    14GB
+<none>                                                               <none>                              7884eee1b4a0   2 months ago    14GB
+<none>                                                               <none>                              760544d48a79   2 months ago    14GB
+<none>                                                               <none>                              3cf856a7e09b   2 months ago    14GB
+<none>                                                               <none>                              76df747a6ec5   2 months ago    14GB
+<none>                                                               <none>                              615478854f5b   2 months ago    14GB
+<none>                                                               <none>                              77e0dbb9c023   2 months ago    14GB
+<none>                                                               <none>                              252d81cc3c0c   2 months ago    14GB
+<none>                                                               <none>                              6a3d71e4dc25   2 months ago    14GB
+<none>                                                               <none>                              5cdf6249d7dd   2 months ago    14GB
+<none>                                                               <none>                              8829ed06ed4b   2 months ago    14GB
+<none>                                                               <none>                              1d3a7302d98c   2 months ago    14GB
+<none>                                                               <none>                              fac6c334e8f7   2 months ago    14GB
+<none>                                                               <none>                              294ee3515e91   2 months ago    14GB
+<none>                                                               <none>                              8f50a0fabf5b   2 months ago    14GB
+<none>                                                               <none>                              2d9e1f7f89ea   2 months ago    14GB
+<none>                                                               <none>                              d6bfd380b12a   2 months ago    14GB
+<none>                                                               <none>                              52b8b14aae04   2 months ago    14GB
+<none>                                                               <none>                              f5f433d950bc   2 months ago    14GB
+<none>                                                               <none>                              d9574203b83b   2 months ago    14GB
+<none>                                                               <none>                              f384673349b1   2 months ago    14GB
+<none>                                                               <none>                              25889bc9503a   2 months ago    14GB
+<none>                                                               <none>                              b6bd8b946fe6   2 months ago    14GB
+<none>                                                               <none>                              377a192232b4   2 months ago    14GB
+<none>                                                               <none>                              aca65d68664d   2 months ago    14GB
+alpine                                                               3.20                                b3119ef930fa   2 months ago    11.7MB
+<none>                                                               <none>                              950dd812e97d   2 months ago    14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v29_xai_framealign                  2fb6d2dac408   2 months ago    14GB
+<none>                                                               <none>                              4b9090d07ac8   2 months ago    14GB
+<none>                                                               <none>                              355364456803   2 months ago    14GB
+<none>                                                               <none>                              7b232a9597b8   2 months ago    14GB
+<none>                                                               <none>                              8964dce7679a   2 months ago    14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v29_xai                             db7c6201568c   2 months ago    14GB
+<none>                                                               <none>                              e96532d79dd2   2 months ago    14GB
+<none>                                                               <none>                              384d4839f2d5   2 months ago    14GB
+<none>                                                               <none>                              2fc448b3049d   2 months ago    14GB
+<none>                                                               <none>                              f82aacaa6b98   2 months ago    14GB
+<none>                                                               <none>                              61503970b7a6   2 months ago    14GB
+<none>                                                               <none>                              85ea44afbeba   2 months ago    14GB
+<none>                                                               <none>                              19e461e45ab5   2 months ago    14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v28_freeze_decoder                  b68a6c68cc28   2 months ago    14GB
+<none>                                                               <none>                              11c15f9afd4a   2 months ago    14GB
+<none>                                                               <none>                              3580e28fae4c   2 months ago    14GB
+<none>                                                               <none>                              07488d5f6b07   2 months ago    14GB
+<none>                                                               <none>                              4760751fa388   2 months ago    14GB
+<none>                                                               <none>                              acd5054b118b   2 months ago    14GB
+<none>                                                               <none>                              89c8363784e9   2 months ago    14GB
+<none>                                                               <none>                              7453afd62c70   2 months ago    14GB
+<none>                                                               <none>                              c8ede084ac4f   2 months ago    14GB
+<none>                                                               <none>                              03347353f34a   2 months ago    14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v27_get_enc_intents                 4a80364dab4e   2 months ago    14GB
+<none>                                                               <none>                              6434788f890f   2 months ago    14GB
+<none>                                                               <none>                              3898dea18012   2 months ago    14GB
+<none>                                                               <none>                              2c4338ebe824   2 months ago    14GB
+<none>                                                               <none>                              a26816f03f37   2 months ago    14GB
+docker.melodis.com/soundhound/data_registry/test                     local                               85f3b494ac3b   2 months ago    12.7GB
+ghcr.io/k1low/tbls                                                   latest                              1c3abc535bad   3 months ago    294MB
+postgres                                                             latest                              6cf6142afacf   3 months ago    616MB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v26_multi_encerror_intentscale90    cb9680c4ff54   3 months ago    14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v26_multi_encerror                  3da0ff83dd98   4 months ago    14GB
+<none>                                                               <none>                              0f467fafe379   4 months ago    14GB
+<none>                                                               <none>                              ebf03f400449   4 months ago    14GB
+<none>                                                               <none>                              1e126be57943   4 months ago    14GB
+<none>                                                               <none>                              459d31741a8d   4 months ago    14GB
+<none>                                                               <none>                              1f6a69846be1   4 months ago    14GB
+<none>                                                               <none>                              367f8ad993cf   4 months ago    14GB
+<none>                                                               <none>                              13cf2b9b4bf2   4 months ago    14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v26_multisource_slurp               f517708ad8ed   4 months ago    14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v26_multisource                     dfcc1b42bfb8   4 months ago    14GB
+ubuntu                                                               latest                              6015f66923d7   4 months ago    115MB
+docker.melodis.com/test-build-server/cailan-oraclelinux9             1.2.28                              31832e4c86e8   4 months ago    16.9GB
+<none>                                                               <none>                              9bb79e5ecf7a   5 months ago    14GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v25_intent270_logitnorm             93f464aa81ba   5 months ago    14GB
+docker.melodis.com/jenkins-agents/auto-iot/terrier-build-broker      2.2.3                               3d17b0cb58fb   5 months ago    1.15GB
+docker.melodis.com/dev-servers/cailan-oraclelinux9                   1.2.27                              fa61f1ecbae5   5 months ago    15.4GB
+docker.melodis.com/soundhound/zipformer_with_slurp_streaming         v24_maskedintentloss270_lcs512      2ee39f211f7d   5 months ago    13.9GB
+oraclelinux                                                          9                                   22f2b5cae694   5 months ago    351MB
+docker.melodis.com/test-build-server/cailan-oraclelinux9             test                                2420a336d356   5 months ago    16.6GB
+docker.melodis.com/dev-servers/embedded-centos7                      1.0.12                              89ab4e392edd   6 months ago    58.1GB
+docker.melodis.com/dev-servers/cailan-oraclelinux9                   1.2.26                              0743d3415433   6 months ago    15.4GB
+f2-server                                                            latest                              1cac18888a3c   7 months ago    503MB
+alpine                                                               latest                              a8560b36e8b8   7 months ago    11.8MB
+<none>                                                               <none>                              af3751c284d6   7 months ago    5.88GB
+rpm-build                                                            latest                              1f08fe2dee5c   7 months ago    5.55GB
+<none>                                                               <none>                              ee07d86c9301   7 months ago    5.55GB
+<none>                                                               <none>                              9a2d7a08f47e   7 months ago    5.55GB
+<none>                                                               <none>                              f3f7ffcdbcd9   7 months ago    5.33GB
+fedora                                                               40                                  3c86d25fef9d   8 months ago    323MB
+bash                                                                 latest                              64defcbc5126   9 months ago    21.5MB
+phx.ocir.io/axmemlgtri2a/dataflow/dependency-packager-linux_x86_64   latest                              fa1c0074a516   10 months ago   1.65GB
+fedora                                                               39                                  d63d63fe5937   10 months ago   254MB
+aldanial/cloc                                                        latest                              2535bc2a6092   13 months ago   459MB
+docker.melodis.com/docker-hosted/sre-base-centos7                    v2.1.2                              f3a04b32a410   13 months ago   1GB
+docker.melodis.com/docker-hosted/sre-base-oraclelinux9               v2.1.2                              cd889775d19c   13 months ago   931MB
+docker.melodis.com/docker-hosted/sre-base-oraclelinux9               v2.1.1                              38cf204168a4   13 months ago   931MB
+docker.melodis.com/dev-servers/cailan                                1.0.7                               d709a771abd3   15 months ago   14.5GB
+fedora                                                               38                                  b9ff6f23cceb   17 months ago   261MB
+fedora                                                               37                                  de153a3928b8   22 months ago   253MB
+fedora                                                               36                                  64cd00a0e2b9   2 years ago     242MB
+fedora                                                               35                                  b6fa5d32e6b6   2 years ago     226MB
+fedora                                                               34                                  55a74d948c47   3 years ago     259MB
+centos                                                               7                                   be65f488b776   4 years ago     299MB
+nde@dev-cailan-shared-2-ol9:/disk1/nde/polaris_intent_detection$ 
+
+######################################################################################################################################################
+
