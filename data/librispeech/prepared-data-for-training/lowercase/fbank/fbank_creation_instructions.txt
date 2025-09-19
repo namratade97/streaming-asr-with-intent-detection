@@ -1,0 +1,73 @@
+You can create the fbank features from icefall's prepare.sh script. 
+To do so, a kubernetes config 'prepare_libri.yaml' file can be found under 'kubernetes-config-yaml' folder.
+Once completed, the 'fbank' folder should look like the following:
+
+├── librispeech_cuts_dev-clean.jsonl.gz
+├── librispeech_cuts_dev-other.jsonl.gz
+├── librispeech_cuts_test-clean.jsonl.gz
+├── librispeech_cuts_test-other.jsonl.gz
+├── librispeech_cuts_train-all-shuf.jsonl.gz
+├── librispeech_cuts_train-clean-100.jsonl.gz
+├── librispeech_cuts_train-clean-360.jsonl.gz
+├── librispeech_cuts_train-other-500.jsonl.gz
+├── librispeech_feats_dev-clean
+│   ├── feats-0.lca
+│   ├── feats-1.lca
+│   ├── feats-2.lca
+│   ├── feats-3.lca
+│   └── feats-4.lca
+├── librispeech_feats_dev-other
+│   ├── feats-0.lca
+│   ├── feats-1.lca
+│   ├── feats-2.lca
+│   ├── feats-3.lca
+│   └── feats-4.lca
+├── librispeech_feats_test-clean
+│   ├── feats-0.lca
+│   ├── feats-1.lca
+│   ├── feats-2.lca
+│   ├── feats-3.lca
+│   └── feats-4.lca
+├── librispeech_feats_test-other
+│   ├── feats-0.lca
+│   ├── feats-1.lca
+│   ├── feats-2.lca
+│   ├── feats-3.lca
+│   └── feats-4.lca
+├── librispeech_feats_train-clean-100
+│   ├── feats-0.lca
+│   ├── feats-1.lca
+│   ├── feats-2.lca
+│   ├── feats-3.lca
+│   └── feats-4.lca
+├── librispeech_feats_train-clean-360
+│   ├── feats-0.lca
+│   ├── feats-1.lca
+│   ├── feats-2.lca
+│   ├── feats-3.lca
+│   └── feats-4.lca
+├── librispeech_feats_train-other-500
+│   ├── feats-0.lca
+│   ├── feats-1.lca
+│   ├── feats-2.lca
+│   ├── feats-3.lca
+│   └── feats-4.lca
+├── musan_cuts.jsonl.gz
+└── musan_feats
+    ├── feats-0.lca
+    ├── feats-10.lca
+    ├── feats-11.lca
+    ├── feats-12.lca
+    ├── feats-13.lca
+    ├── feats-14.lca
+    ├── feats-1.lca
+    ├── feats-2.lca
+    ├── feats-3.lca
+    ├── feats-4.lca
+    ├── feats-5.lca
+    ├── feats-6.lca
+    ├── feats-7.lca
+    ├── feats-8.lca
+    └── feats-9.lca
+
+8 directories, 59 files
