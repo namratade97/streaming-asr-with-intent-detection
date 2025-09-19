@@ -1,0 +1,5 @@
+The fbank.zip has been uploaded to Google Drive. You can download and extract the .zip file.
+You can download it here:
+https://drive.google.com/file/d/1yAy_CkZsBwNjJr6hg2Nlrh_h5y_kBy8W/view?usp=sharing
+
+You need to replace the 'slurp_cuts_*.jsonl' files from the extracted fbank folder with their lowercase alternatives already present in this folder.
