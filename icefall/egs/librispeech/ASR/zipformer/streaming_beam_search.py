@@ -26,6 +26,29 @@ from decode_stream import DecodeStream
 from icefall.decode import one_best_decoding
 from icefall.utils import get_texts
 
+def build_banned_id_set(spm_processor):
+    """
+    Return the vocab‑indices of every SentencePiece that contains '<' or '>'.
+    """
+    banned = set()
+    for idx in range(spm_processor.get_piece_size()):
+        piece = spm_processor.id_to_piece(idx)
+        if "<" in piece or ">" in piece:
+            banned.add(idx)
+    # # keep the blank, unk etc.:
+    # banned.discard(spm_processor.piece_to_id("<blk>"))
+    # banned.discard(spm_processor.piece_to_id("<unk>"))
+    # banned.discard(spm_processor.piece_to_id("<s>"))
+    # banned.discard(spm_processor.piece_to_id("</s>"))
+
+    # discard only if they actually exist
+    for tok in ["<blk>", "<unk>", "<s>", "</s>", "<sos/eos>"]:
+        tok_id = spm_processor.piece_to_id(tok)
+        if 0 <= tok_id < 500:
+            banned.discard(tok_id)
+
+    return banned
+
 
 def greedy_search(
     model: nn.Module,
@@ -102,6 +125,7 @@ def modified_beam_search(
     streams: List[DecodeStream],
     num_active_paths: int = 4,
     blank_penalty: float = 0.0,
+    banned_ids: set = None #### stop decoder based intent tokens
 ) -> None:
     """Beam search in batch mode with --max-sym-per-frame=1 being hardcoded.
 
@@ -163,6 +187,13 @@ def modified_beam_search(
 
         logits = logits.squeeze(1).squeeze(1)
 
+        if banned_ids:
+            # keep only IDs that are valid for current vocab
+            valid_banned = [i for i in banned_ids if i < logits.size(-1)]
+            if valid_banned:
+                logits[:, valid_banned] = -float("inf")
+                assert logits[:, valid_banned].max().item() == -float("inf")
+
         if blank_penalty != 0.0:
             logits[:, 0] -= blank_penalty
 
@@ -197,6 +228,12 @@ def modified_beam_search(
                 if new_token != blank_id:
                     new_ys.append(new_token)
 
+                    # ---- time alignment --------------------------------
+                    abs_t = streams[i].done_frames + t   # ‘t’ is the frame index in this chunk
+                    streams[i].token_times.append(abs_t) # store once per emitted piece
+                    streams[i].token_syms.append(new_token)
+                    # -----------------------------------------------------
+                    
                 new_log_prob = topk_log_probs[k]
                 new_hyp = Hypothesis(ys=new_ys, log_prob=new_log_prob)
                 B[i].add(new_hyp)
