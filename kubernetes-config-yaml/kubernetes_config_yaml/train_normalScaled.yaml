@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-icefall-train-40-nfs
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: accelerator
+            operator: NotIn
+            values:
+            - a100
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-icefall-container-train-40-nfs
+      image: docker.melodis.com/soundhound/icefall:torch1.13.0-cuda11.6-updated-v3
+      command:
+        - "egs/librispeech/ASR/zipformer/train.py"
+        - "--num-epochs"
+        - "40"
+        - "--use-fp16"
+        - "1"
+        - "--start-epoch"
+        - "1"
+        - "--causal"
+        - "0"
+        - "--full-libri"
+        - "1"
+        - "--max-duration"
+        - "1000"
+        - "--exp-dir"
+        - "zipformer/exp"
+        
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde
+      resources:
+        requests:
+          cpu: 26
+          nvidia.com/gpu: 4
+          memory: 40Gi
+          ephemeral-storage: 40Gi
+        limits:
+          cpu: 26
+          nvidia.com/gpu: 4
+          memory: 40Gi
+      volumeMounts:
+        - name: nde-icefall-volume
+          mountPath: /workspace/icefall/download #using absolutepath here
+          subPath: download #in the volume /whatever/download, using relative path here
+        - name: nde-icefall-volume
+          mountPath: /workspace/icefall/data
+          subPath: data
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/egs/librispeech/ASR/zipformer/exp
+          subPath: models/zipformer/v401
+          readOnly: false 
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/zipformer/exp
+          subPath: models/zipformer/v402 #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
+          readOnly: false
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    - name: nde-icefall-volume
+      persistentVolumeClaim:
+        claimName: nde-icefall-claim
+    - name: nfs-workspace-rw
+      nfs:
+        server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+        path: /dev_gpu_filesystem/am-team/workspaces/nde
+        readOnly: false

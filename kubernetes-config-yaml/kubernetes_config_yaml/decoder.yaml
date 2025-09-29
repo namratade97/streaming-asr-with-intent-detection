@@ -1,0 +1,194 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-icefall-decoder-base-lib960slurp-incparam-asr-7-3-v2
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: accelerator
+            operator: NotIn
+            values:
+            - a100
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-icefall-container-lib960slurp-incparam-asr
+      # image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v26_multisource #v26_multi_encerror #v26_multisource #docker.melodis.com/soundhound/icefall:torch1.13.0-cuda11.6-updated-v3
+      # image: docker.melodis.com/soundhound/icefall:torch1.13.0-cuda11.6-updated-v3
+      image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v40_conv
+      command: 
+        - "egs/librispeech/ASR/zipformer/streaming_decode.py"
+        - "--epoch"
+        - "7"
+        - "--avg"
+        - "3"
+        - "--use-averaged-model"
+        - "True" ####
+
+        - "--exp-dir"
+        - "zipformer/exp-causal-base-lib960-slurp-incparam-asr" #"./zipformer/exp-causal"
+        - "--causal"
+        - "1"
+        - "--chunk-size"
+        - "32"
+        - "--left-context-frames"
+        - "512"
+        - "--context-size" ###
+        - "4"
+        - "--num-decode-streams"
+        - "100"
+
+        - "--decoding-method"
+        - "modified_beam_search"
+
+        - "--num-encoder-layers"
+        - "4,4,6,8,6,4" # 2,2,3,4,3,2
+
+
+        - "--bpe-model" #####
+        - "data/lang_bpe_500/bpe.model" #uppercase
+        # - "data/lang_bpe_500_multisource/polaris_bpe500_lower.model"
+        # - "data2/updated_tokenizer_slurp/slurp_bpe_NEW_predefined_intents.model"
+
+
+        - "--num_active_paths"
+        - "16"
+        - "--beam"
+        - "8"
+        - "--max-contexts"
+        - "8"
+        - "--max-states"
+        - "64"
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde
+      resources:
+        requests:
+          cpu: 26
+          nvidia.com/gpu: 1
+          memory: 40Gi
+          ephemeral-storage: 40Gi
+        limits:
+          cpu: 26
+          nvidia.com/gpu: 1
+          memory: 40Gi
+      volumeMounts:
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/download #using absolutepath here
+          subPath: organized_slurp_data_pods_uppercase_without_intent/audio 
+          # subPath: organized_slurp_data_pods/audio 
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/data
+          subPath: organized_slurp_data_pods_uppercase_without_intent/data
+
+        # - name: nde-icefall-volume
+        #   mountPath: /workspace/icefall/download #using absolutepath here
+        #   subPath: download
+
+        # - name: nde-icefall-volume
+        #   mountPath: /workspace/icefall/data
+        #   subPath: data
+
+        # - name: nfs-workspace-rw
+        #   mountPath: /workspace/icefall/data
+        #   subPath: LibriSpeech_nde/data #Librispeech_nde is lowercase
+
+        # - name: nfs-workspace-rw
+        #   mountPath: /workspace/icefall/data2
+        #   subPath: organized_slurp_data_pods_lower/data
+
+        # - name: nfs-workspace-polaris-rw
+        #   mountPath: /workspace/icefall/datalibrispeech
+        #   subPath: feats/polaris-majid-feat-librispeech-train
+
+        # - name: nfs-workspace-polaris-rw
+        #   mountPath: /workspace/icefall/datafisher
+        #   subPath: feats/polaris-majid-feat-fisher-16khz
+
+        # - name: nfs-workspace-polaris-rw
+        #   mountPath: /workspace/icefall/datacommon
+        #   subPath: feats/polaris-majid-feat-common-voice
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/zipformer/exp-causal-base-lib960-slurp-incparam-asr #│ 2024-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+          subPath: models_streaming/zipformer/v402_streaming_base-libri-960-slurp-inc-param #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
+          readOnly: false
+        - name: dshm
+          mountPath: /dev/shm
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    # - name: nde-icefall-volume
+    #   persistentVolumeClaim:
+    #     claimName: nde-icefall-claim
+
+    - name: nfs-workspace-rw
+      nfs:
+        server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+        path: /dev_gpu_filesystem/am-team/workspaces/nde
+        readOnly: false
+    
+    # - name: nfs-workspace-polaris-rw
+    #   nfs:
+    #     server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+    #     path: /dev_gpu_filesystem/am-team/polaris
+    #     readOnly: false
+
+    - name: dshm
+      emptyDir:
+        medium: Memory
+        
+        
+        
+        
+  #       - name: nde-icefall-volume
+  #         mountPath: /workspace/icefall/download
+  #         subPath: download
+  #       # - name: nfs-workspace-rw
+  #       #   mountPath: /workspace/icefall/download #using absolutepath here
+  #       #   subPath: organized_slurp_data_pods/audio 
+
+  #       - name: nde-icefall-volume
+  #         mountPath: /workspace/icefall/data
+  #         subPath: data
+
+  #       - name: nfs-workspace-rw
+  #         mountPath: /workspace/icefall/data2
+  #         subPath: organized_slurp_data_pods/data
+
+  #       - name: nfs-workspace-rw
+  #         mountPath: /workspace/icefall/zipformer/exp-causal-fulllibri #/workspace/icefall/zipformer/exp-causal
+  #         subPath: models_streaming/zipformer/v402_streaming_MultiSource3 #models_streaming/zipformer/v402_streaming
+  #       - name: dshm
+  #         mountPath: /dev/shm
+  # tolerations:
+  # - key: nvidia.com/gpu
+  #   operator: Exists
+  #   effect: NoSchedule
+  # volumes:
+  #   - name: nde-icefall-volume
+  #     persistentVolumeClaim:
+  #       claimName: nde-icefall-claim
+  #   - name: nfs-workspace-rw
+  #     nfs:
+  #       server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+  #       path: /dev_gpu_filesystem/am-team/workspaces/nde
+  #       readOnly: false
+  #   - name: dshm
+  #     emptyDir:
+  #       medium: Memory
+  #       sizeLimit: 20Gi

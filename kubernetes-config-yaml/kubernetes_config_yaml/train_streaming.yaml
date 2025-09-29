@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-icefall-train-multi-base-libri100-slurp-asr-finetune
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  # affinity:
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #       - matchExpressions:
+  #         - key: accelerator
+  #           operator: NotIn
+  #           values:
+  #           - a100
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-icefall-container-multi-base-libri100-slurp-asr-finetune
+      image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v39_base_libri_slurp #v27_giga
+      # image: docker.melodis.com/soundhound/icefall:torch1.13.0-cuda11.6-updated-v3
+      command:
+        - "egs/librispeech/ASR/zipformer/train.py"
+        - "--world-size"
+        - "3"
+        - "--num-epochs"
+        - "110"
+        # - "--start-batch" ######
+        # - "256000"
+        - "--use-fp16"
+        - "0"
+        - "--start-epoch" #####
+        - "101"
+        - "--causal"
+        - "1"
+
+        - "--full-libri" #######
+        - "0"
+
+        - "--max-duration"
+        - "100"
+        - "--exp-dir"
+        - "zipformer/exp-causal-multi-base-libri100-slurp-asr-finetune-lowercase"
+        - "--base-lr"
+        # - "0.035"
+        - "0.025"
+
+        - "--left-context-frames" ######
+        - "512"
+        - "--context-size" #####
+        - "4"
+
+        - "--bpe-model"
+        # - "data/lang_bpe_500/bpe.model" #uppercase
+        - "data/lang_bpe_500_multisource/polaris_bpe500_lower.model" #lowercase
+        # - "data/lang_bpe_592/libri_intent_592.model" #uppercase
+        # - "data/lang_bpe_592_multisource/new_polaris_bpe592_lower_retrained.model" #lowercase
+        # - "data2/updated_tokenizer_slurp/slurp_bpe_NEW_500_without_intent.model"
+        # - "data2/updated_tokenizer_slurp/slurp_bpe_NEW_predefined_intents.model"
+
+        # - "--vocab-size"
+        # - "500"
+
+        # - "--num-encoder-layers"
+        # # - "3,3,4,6,4,3"
+        # - "4,4,6,8,6,4" # 2,2,3,4,3,2
+
+        # - "--encoder-dim"
+        # - "256,384,512,768,512,384"
+
+        # - "--feedforward-dim"
+        # # - "1024,1536,2048,3072,2048,1536"
+        # - "768,1024,1536,2048,1536,1024"
+
+        # - "--num-heads"
+        # # - "4,6,8,12,8,6"
+        # - "3,4,6,8,6,4"
+
+        # - "--decoder-dim"
+        # - "1024"
+        # - "--joiner-dim"
+        # - "1024"
+
+
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde
+      resources:
+        requests:
+          cpu: 26
+          nvidia.com/gpu: 3
+          memory: 100Gi
+          ephemeral-storage: 100Gi
+        limits:
+          cpu: 26
+          nvidia.com/gpu: 3
+          memory: 100Gi
+      volumeMounts:
+        # - name: nde-icefall-volume
+        #   mountPath: /workspace/icefall/download #using absolutepath here
+        #   subPath: download #in the volume /whatever/download, using relative path here
+
+        # # - name: nde-icefall-volume
+        # #   mountPath: /workspace/icefall/data
+        # #   subPath: data
+
+        # - name: nde-icefall-volume
+        #   mountPath: /workspace/icefall/download
+        #   subPath: LibriSpeech_nde/download
+
+        
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/datalibri
+          subPath: LibriSpeech_nde/data
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/data
+          subPath: organized_slurp_data_pods_lowercase_without_intent/data
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/zipformer/exp-causal-multi-base-libri100-slurp-asr-finetune-lowercase #│ 2024-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+          subPath: models_streaming/zipformer/v402_streaming_multi-base-libri100-slurp-asr-finetune-lowercase #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
+          readOnly: false
+
+
+        - name: dshm
+          mountPath: /dev/shm
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    # - name: nde-icefall-volume
+    #   persistentVolumeClaim:
+    #     claimName: nde-icefall-claim
+    - name: nfs-workspace-rw
+      nfs:
+        server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+        path: /dev_gpu_filesystem/am-team/workspaces/nde
+        readOnly: false
+    - name: dshm
+      emptyDir:
+        medium: Memory

@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-slurp-train-libricheck-lower-3
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  schedulerName: ml-scheduler
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: accelerator
+            operator: NotIn
+            values:
+            - a100
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-slurp-container-libricheck-lower-2
+      image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v26_multi_encerror #v26_multi_encerror_intentscale90 #v26_multisource_slurp #v25_intent270_logitnorm #v24_maskedintentloss270_lcs512 #v24_maskedintentloss_lcs512_libri15
+      command:
+        - "egs/librispeech/ASR/zipformer/train_slurp.py"
+        - "--world-size"
+        - "4"
+        - "--num-epochs"
+        - "25"
+        - "--use-fp16"
+        - "1"
+        - "--start-epoch"
+        - "1" ##
+        - "--causal"
+        - "1"
+        - "--max-duration"
+        - "1000"
+        - "--exp-dir"
+        - "zipformer/exp-causal-slurp-libricheck-lower"
+        - "--base-lr"
+        - "0.01"
+        - "--enable-spec-aug"
+        - "True"
+        - "--spec-aug-time-warp-factor"
+        - "120"
+        - "--context-size" #####
+        - "4"
+        - "--left-context-frames" ######
+        - "512"
+
+        # - "--vocab-size"
+        # - "592"
+
+        - "--bpe-model"
+        # - "data/updated_tokenizer_slurp/slurp_bpe_NEW_predefined_intents.model"
+        # - "data/lang_bpe_592/libri_intent_592.model" #uppercase
+        # - "data/lang_bpe_592_multisource/polaris_bpe592_lower.model" #lowercase
+        - "libri_bpe_lowercase/LIBRI_TRANSCRIPT_lower_592_retrained.model" #lowercase
+
+        - "--checkpoint-path"
+        - "data/libricheck_base_libri_model/best-valid-loss.pt" #lowercase
+        # - "data/base_libri_model_lcs512/best-valid-loss.pt" #uppercase_libri
+        # - "data/base_libri_model_multisource33/best-valid-new.pt" #lowercase
+        # - "data/base_libri_model_libricheck_l_ltokenizer/best-valid-loss.pt"
+        # - "data/base_libri_model_multisource/best-valid-loss.pt" #trained on capitalised tokenizer
+
+        # - "--lr-batches"
+        # - "12000"
+
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde      
+      resources:
+        requests:
+          cpu: 26
+          nvidia.com/gpu: 4
+          memory: 40Gi
+          ephemeral-storage: 40Gi
+        limits:
+          cpu: 26
+          nvidia.com/gpu: 4
+          memory: 40Gi
+
+      volumeMounts:
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/download #using absolutepath here
+          subPath: organized_slurp_data_pods_lower/audio 
+          # subPath: organized_slurp_data_pods/audio 
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/data
+          # subPath: organized_slurp_data_pods/data
+          subPath: organized_slurp_data_pods_lower/data
+        
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/libri_bpe_lowercase
+          subPath: LIBRI_TRANSCRIPT_lower
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/zipformer/exp-causal-slurp-libricheck-lower #│ 2025-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+          subPath: models_streaming_slurp_new6/zipformer/LIBRICHECK_run_new17_LIBRICHECK_LOWER_RETRAINED #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
+          readOnly: false
+
+        - name: dshm
+          mountPath: /dev/shm
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    # - name: nde-icefall-volume
+    #   persistentVolumeClaim:
+    #     claimName: nde-icefall-claim
+    - name: nfs-workspace-rw
+      nfs:
+        server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+        path: /dev_gpu_filesystem/am-team/workspaces/nde
+        readOnly: false
+    - name: dshm
+      emptyDir:
+        medium: Memory

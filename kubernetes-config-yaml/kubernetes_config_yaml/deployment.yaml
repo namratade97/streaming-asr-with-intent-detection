@@ -1,0 +1,82 @@
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: nde-icefall-claim
+#   labels:
+#     project: polaris
+#     user: nde
+# spec:
+#   storageClassName: oci-bv
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 400Gi
+# ---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-icefall-decoder
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: accelerator
+            operator: NotIn
+            values:
+            - a100
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-icefall-container-decoder
+      image: docker.melodis.com/soundhound/icefall:torch1.13.0-cuda11.6-updated-v3
+      # command: ["egs/librispeech/ASR/prepare.sh"] #using relative path here, dockerimage lands you at /workspace/icefall
+      # command: ["sleep", "infinity"]
+      command:
+        - "egs/librispeech/ASR/zipformer/train.py"
+        - "--num-epochs"
+        - "3"
+      # command: ["egs/librispeech/ASR/zipformer/decoder.py"]
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde
+      resources:
+        requests:
+          cpu: 26
+          nvidia.com/gpu: 1
+          memory: 20Gi
+          ephemeral-storage: 10Gi
+        limits:
+          cpu: 26
+          nvidia.com/gpu: 1
+          memory: 20Gi
+      volumeMounts:
+        - name: nde-icefall-volume
+          mountPath: /workspace/icefall/download #using absolutepath here
+          subPath: download #in the volume /whatever/download, using relative path here
+          # readOnly: true
+        - name: nde-icefall-volume
+          mountPath: /workspace/icefall/data
+          subPath: data
+        - name: nde-icefall-volume
+          mountPath: /workspace/icefall/egs/librispeech/ASR/zipformer/exp
+          subPath: models/zipformer/v1 #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    - name: nde-icefall-volume
+      persistentVolumeClaim:
+        claimName: nde-icefall-claim
+      # readOnly: true
+    

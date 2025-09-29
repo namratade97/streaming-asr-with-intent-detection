@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-copy-pvc-pod
+spec:
+  containers:
+    - name: copy
+      image: busybox
+      command: ["tail", "-f", "/dev/null"]
+      volumeMounts:
+        - name: nde-icefall-volume
+          mountPath: /workspace/icefall/download  # Mount your download folder
+          subPath: download
+        - name: nde-icefall-volume
+          mountPath: /workspace/icefall/data       # Mount your data folder
+          subPath: data
+  volumes:
+    - name: nde-icefall-volume
+      persistentVolumeClaim:
+        claimName: nde-icefall-claim

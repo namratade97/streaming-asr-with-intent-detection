@@ -1,0 +1,158 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-slurp-decoder-base-multi-libri100slurp-10-110avg7-200-5
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  schedulerName: ml-scheduler
+  # affinity:
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #       - matchExpressions:
+  #         - key: accelerator
+  #           operator: NotIn
+  #           values:
+  #           - a100
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-container-decoder-base-multi-libri100slurp-10-110avg7
+      image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v40_conv
+      # image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v40_conv #v39_base_libri_slurp #v40_conv #v39_base_libri_slurp #v20lcs512 #v37_focalloss #v20lcs512 #v37_focalloss #v34_freezeenc_encintent #v36_normal_encintent #v34_freezeenc_encintent  #v30_xai #v31_mix_slurplibri_morelibri3 #v32_nonlinear_classification_head #v33_unfreeze_more #v32_nonlinear_classification_head #v31_mix_slurplibri #v27_get_enc_intents #v30_xai #v29_xai_framealign #v28_freeze_decoder #v27_get_enc_intents #v28_freeze_decoder #v26_multi_encerror #v27_get_enc_intents #v26_multi_encerror #v26_multi_encerror_intentscale90 #v26_multi_encerror #v26_multisource_slurp #v25_intent270_logitnorm #v24_maskedintentloss_lcs512_libri15 #v24_maskedintentloss270_lcs512 #v24_IntentLossMasked #v25intentloss30 #v21stokenizercontxt8 #v20lcs512 #v17_slurptokenizer_added_intent #v20lcs512
+      command: 
+        - "egs/librispeech/ASR/zipformer/streaming_decode_slurp.py"
+        # - "egs/librispeech/ASR/zipformer/streaming_decode.py"
+        - "--epoch"
+        - "200"
+        # - "--iter"
+        # - "1000"
+        - "--avg"
+        - "5"
+        - "--use-averaged-model"
+        - "True" ####
+
+        - "--exp-dir"
+        # - "./zipformer/exp-causal-slurp-lcs512-contxt4-loss270-enc-ier-multi3-nt"
+        - "/workspace/icefall/zipformer/exp-causal-slurp-encintent-base-multi-libri100slurp-10-110avg7"
+        - "--causal"
+        - "1"
+        - "--chunk-size"
+        - "32"
+        
+        - "--num-decode-streams"
+        - "100" #####
+        - "--bpe-model"
+        # - "data/lang_bpe_592/libri_intent_592.model" #uppercase
+        # - "data/lang_bpe_500/bpe.model" #uppercase
+        - "data/lang_bpe_500_multisource/polaris_bpe500_lower.model" #lowercase
+        # - "data/lang_bpe_592_multisource/new_polaris_bpe592_lower_retrained.model" #lowercase
+        # - "/workspace/icefall/libri_bpe_lowercase/LIBRI_TRANSCRIPT_lower_592_retrained.model" #lowercase
+        # - "data/lang_bpe_592_multisource/polaris_bpe592_lower.model"
+        # - "data/updated_tokenizer_slurp/slurp_bpe_NEW_predefined_intents.model"
+        # - "data/lang_bpe_592/libri_intent_592.model" #uppercase
+        # - "data/lang_bpe_500/bpe.model" #uppercase - to check base libri performance
+
+        - "--decoding-method"
+        - "modified_beam_search"
+
+        - "--context-size" ###
+        - "4"
+
+        - "--left-context-frames" #######
+        - "512"
+
+        # - "--decoder-dim"
+        # - "1024"
+        # - "--joiner-dim"
+        # - "1024"
+
+        - "--num_active_paths"
+        - "16"
+        - "--beam"
+        - "8"
+        - "--max-contexts"
+        - "8"
+        - "--max-states"
+        - "64"
+
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde
+      resources:
+        requests:
+          cpu: 13
+          nvidia.com/gpu: 1 ###2
+          memory: 40Gi
+          ephemeral-storage: 40Gi
+        limits:
+          cpu: 13
+          nvidia.com/gpu: 1 ##2
+          memory: 40Gi
+      volumeMounts:
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/download #using absolutepath here
+          # subPath: organized_slurp_data_pods_uppercase_without_intent/audio 
+          # subPath: organized_slurp_data_pods/audio
+          subPath: organized_slurp_data_pods_lower/audio 
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/data
+          # subPath: organized_slurp_data_pods_uppercase_without_intent/data
+          # subPath: organized_slurp_data_pods/data
+          subPath: organized_slurp_data_pods_lower/data
+
+        # - name: nfs-workspace-rw
+        #   mountPath: /workspace/icefall/data2
+        #   subPath: organized_slurp_data_pods_lower/data
+
+        # - name: nfs-workspace-rw
+        #   mountPath: /workspace/icefall/libri_bpe_lowercase
+        #   subPath: LIBRI_TRANSCRIPT_lower
+
+        # - name: nde-icefall-volume
+        #   mountPath: /workspace/icefall/download
+        #   subPath: download
+        # - name: nde-icefall-volume
+        #   mountPath: /workspace/icefall/data
+        #   subPath: data
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/zipformer/exp-causal-slurp-encintent-base-multi-libri100slurp-10-110avg7 #exp-causal-slurp-v-new17-lcs512 #│ 2024-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+          # subPath: models_streaming_slurp_new6/zipformer/run_new17_encintent_NORMAL_FOCALLOSS #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
+          # subPath: models_streaming_slurp_new6/zipformer/run_new17_encintent_baselibri100slurp-conv-500
+          subPath: models_streaming_slurp_new6/zipformer/run_new17_encintent_basemultislurp-intentfinetune-110_avg7_corr
+          # subPath: models_streaming/zipformer/v402_streaming_base-libri100-slurp
+          # subPath: models_streaming/zipformer/v402_streaming_base-libri-900-slurp
+          readOnly: false
+        # - name: nfs-workspace-rw
+        #   mountPath: /workspace/icefall/zipformer/exp-causal #│ 2024-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+        #   subPath: models_streaming/zipformer/v402_streaming #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
+        #   readOnly: false
+        - name: dshm
+          mountPath: /dev/shm
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    # - name: nde-icefall-volume
+    #   persistentVolumeClaim:
+    #     claimName: nde-icefall-claim
+    - name: nfs-workspace-rw
+      nfs:
+        server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+        path: /dev_gpu_filesystem/am-team/workspaces/nde
+        readOnly: false
+    - name: dshm
+      emptyDir:
+        medium: Memory
+        sizeLimit: 20Gi
+
+        #run_new17_MIXSLURPLIBRI_ENC_INTENT_UNFREEZE_MORE

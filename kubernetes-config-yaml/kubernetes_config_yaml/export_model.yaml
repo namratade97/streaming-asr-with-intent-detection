@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-slurp-train-basemultislurp-export-110-7
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  schedulerName: ml-scheduler
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: accelerator
+            operator: NotIn
+            values:
+            - a100
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-slurp-container-basemultislurp-export
+      image: docker.melodis.com/soundhound/icefall:torch1.13.0-cuda11.6-updated-v3
+      # image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v26_multisource #v34_freezeenc_encintent #v35_unfreezeallenc #v34_freezeenc_encintent #v30_xai  #v32_nonlinear_classification_head #v33_unfreeze_more #v32_nonlinear_classification_head #v31_mix_slurplibri_morelibri3 #v31_mix_slurplibri #v27_get_enc_intents #v28_freeze_decoder #v26_multi_encerror #v26_multi_encerror_intentscale90 #v26_multisource_slurp #v25_intent270_logitnorm #v24_maskedintentloss270_lcs512 #v24_maskedintentloss_lcs512_libri15
+      command:
+        - "egs/librispeech/ASR/zipformer/export.py"
+        
+        - "--epoch"
+        - "110"
+        - "--avg"
+        - "7"
+
+        - "--causal"
+        - "1"
+
+        - "--exp-dir"
+        - "zipformer/exp-causal-base-multi-slurp"
+
+
+        - "--left-context-frames" ######
+        - "512"
+        - "--context-size" #####
+        - "4"
+
+
+        - "--tokens" #500 vocab of base model
+        - "data/lang_bpe_500_multisource/polaris_bpe500_lower_fixed.txt" #lowercase
+        # - "data/lang_bpe_500_multisource/polaris_bpe500_lower.txt" #lowercase
+        # - "data/lang_bpe_500/bpe_500.txt" #uppercase
+       
+
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde      
+      resources:
+        requests:
+          cpu: 26
+          nvidia.com/gpu: 1
+          memory: 40Gi
+          ephemeral-storage: 40Gi
+        limits:
+          cpu: 26
+          nvidia.com/gpu: 1
+          memory: 40Gi
+
+      volumeMounts:
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/download #using absolutepath here
+          subPath: organized_slurp_data_pods_lower/audio 
+          # subPath: organized_slurp_data_pods/audio 
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/data
+          # subPath: organized_slurp_data_pods/data
+          subPath: organized_slurp_data_pods_lower/data
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/zipformer/exp-causal-base-multi-slurp
+          # subPath: models_streaming/zipformer/v402_streaming_base-libri-900-slurp
+          subPath: models_streaming/zipformer/v402_streaming_multi-base-libri100-slurp-asr-finetune-lowercase
+          readOnly: false
+
+        - name: dshm
+          mountPath: /dev/shm
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    # - name: nde-icefall-volume
+    #   persistentVolumeClaim:
+    #     claimName: nde-icefall-claim
+    - name: nfs-workspace-rw
+      nfs:
+        server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+        path: /dev_gpu_filesystem/am-team/workspaces/nde
+        readOnly: false
+    - name: dshm
+      emptyDir:
+        medium: Memory
+# /mnt/gpu-phx/am-team/workspaces/nde/

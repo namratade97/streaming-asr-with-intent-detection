@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-slurp-train-baselibri960slurp-inc-param-2
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  schedulerName: ml-scheduler
+  tolerations:
+    - key: accelerator
+      operator: Equal
+      value: a100
+      effect: NoSchedule
+    - key: accelerator
+      operator: Equal
+      value: h100
+      effect: NoSchedule
+    - key: nvidia.com/gpu
+      operator: Exists
+      effect: NoSchedule
+
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-icefall-container-train-base-libri-960-slurp-inc-param-2
+      image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v39_base_libri_slurp
+      command:
+        - "egs/librispeech/ASR/zipformer/train.py"
+        - "--world-size"
+        - "4"
+        - "--num-epochs"
+        - "200"
+        - "--use-fp16"
+        - "0"
+        # - "--start-epoch"
+        # - "1"
+        - "--start-batch"
+        - "472000"
+        - "--causal"
+        - "1"
+
+        - "--full-libri"
+        - "1"
+
+        - "--max-duration"
+        - "10"
+        - "--exp-dir"
+        - "zipformer/exp-causal-base-libri-960-slurp-inc-param"
+        - "--base-lr"
+        - "0.00005"
+
+        - "--left-context-frames"
+        - "512"
+        - "--context-size"
+        - "4"
+
+        - "--bpe-model"
+        - "data/lang_bpe_500/bpe.model" #uppercase
+
+        - "--num-encoder-layers"
+        - "4,4,6,8,6,4" # 2,2,3,4,3,2
+
+        # - "--encoder-dim"
+        # - "256,384,512,768,512,384"
+
+        # - "--feedforward-dim"
+        # - "768,1024,1536,2048,1536,1024"
+
+        # - "--num-heads"
+        # - "3,4,6,8,6,4"
+
+
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde
+      resources:
+        requests:
+          cpu: 30
+          nvidia.com/gpu: 4
+          memory: 100Gi
+          ephemeral-storage: 100Gi
+        limits:
+          cpu: 30
+          nvidia.com/gpu: 4
+          memory: 100Gi
+      volumeMounts:
+        - name: nde-icefall-volume
+          mountPath: /workspace/icefall/download 
+          subPath: download 
+
+        - name: nde-icefall-volume
+          mountPath: /workspace/icefall/datalibri
+          subPath: data
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/data
+          subPath: organized_slurp_data_pods_uppercase_without_intent/data
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/zipformer/exp-causal-base-libri-960-slurp-inc-param 
+          subPath: models_streaming/zipformer/v402_streaming_base-libri-960-slurp-inc-param 
+          readOnly: false
+
+
+        - name: dshm
+          mountPath: /dev/shm
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    - name: nde-icefall-volume
+      persistentVolumeClaim:
+        claimName: nde-icefall-claim
+    - name: nfs-workspace-rw
+      nfs:
+        server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+        path: /dev_gpu_filesystem/am-team/workspaces/nde
+        readOnly: false
+    - name: dshm
+      emptyDir:
+        medium: Memory

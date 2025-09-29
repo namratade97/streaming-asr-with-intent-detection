@@ -1,0 +1,146 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-icefall-train-multisource-libricheck-lower
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  schedulerName: ml-scheduler
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: accelerator
+            operator: NotIn
+            values:
+            - a100
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-icefall-container-train-multisource-libricheck-lower
+      image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v26_multisource #v24_maskedintentloss270_lcs512 #v28_multisource
+      # image: docker.melodis.com/soundhound/icefall:torch1.13.0-cuda11.6-updated-v3
+      command:
+        - "egs/librispeech/ASR/zipformer/train.py"
+        - "--world-size"
+        - "2" 
+        - "--num-epochs"
+        - "40"
+        # - "--start-batch" ######
+        # - "372000"
+        - "--use-fp16"
+        # - "1"
+        - "0"
+        - "--start-epoch" #####
+        - "1" 
+        - "--causal"
+        - "1"
+        - "--full-libri" #### changed
+        - "0"
+        - "--max-duration"
+        - "500"
+        # - "1000"
+        - "--exp-dir"
+        - "zipformer/exp-causal-multisource-libricheck-lower"
+        
+        - "--base-lr"
+        # - "0.005"
+        # - "0.02"
+        - "0.035"
+        
+        - "--left-context-frames" ######
+        - "512"
+        - "--context-size" #####
+        - "4"
+
+        - "--bpe-model"
+        - "libri_bpe_lowercase_500/LIBRI_TRANSCRIPT_lower.model"
+        # - "data2/lang_bpe_500/bpe.model" #uppercase
+        # - "data2/lang_bpe_500_multisource/polaris_bpe500_lower.model" #lowercase
+        # - "data2/updated_tokenizer_slurp/slurp_bpe_NEW_500_without_intent.model"
+        # - "data2/updated_tokenizer_slurp/slurp_bpe_NEW_predefined_intents.model"
+        # - "data/lang_bpe_592/libri_intent_592.model"
+        
+        # - "--vocab-size"
+        # - "500"
+        - "--enable-musan"
+        - "False"
+
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde
+      resources:
+        requests:
+          cpu: 16
+          nvidia.com/gpu: 2
+          memory: 40Gi
+          ephemeral-storage: 40Gi
+        limits:
+          cpu: 16
+          nvidia.com/gpu: 2
+          memory: 40Gi
+      volumeMounts:
+        # - name: nde-icefall-volume
+        #   mountPath: /workspace/icefall/download #using absolutepath here
+        #   subPath: download #in the volume /whatever/download, using relative path here
+        
+        # - name: nde-icefall-volume
+        #   mountPath: /workspace/icefall/data #uppercase
+        #   subPath: data
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/data #lowercase
+          subPath: LibriSpeech_nde/data
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/libri_bpe_lowercase_500
+          subPath: LIBRI_TRANSCRIPT_lower
+
+        # - name: nfs-workspace-polaris-rw
+        #   mountPath: /workspace/icefall/datalibrispeech
+        #   subPath: feats/polaris-majid-feat-librispeech-train
+
+        # - name: nfs-workspace-polaris-rw
+        #   mountPath: /workspace/icefall/datafisher
+        #   subPath: feats/polaris-majid-feat-fisher-16khz
+
+        # - name: nfs-workspace-polaris-rw
+        #   mountPath: /workspace/icefall/datacommon
+        #   subPath: feats/polaris-majid-feat-common-voice
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/zipformer/exp-causal-multisource-libricheck-lower #│ 2024-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+          subPath: models_streaming/zipformer/v402_streaming_MultiSource-libricheck-LOWER #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
+          readOnly: false
+        - name: dshm
+          mountPath: /dev/shm
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    # - name: nde-icefall-volume
+    #   persistentVolumeClaim:
+    #     claimName: nde-icefall-claim
+
+    - name: nfs-workspace-rw
+      nfs:
+        server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+        path: /dev_gpu_filesystem/am-team/workspaces/nde
+        readOnly: false
+    
+    # - name: nfs-workspace-polaris-rw
+    #   nfs:
+    #     server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+    #     path: /dev_gpu_filesystem/am-team/polaris
+    #     readOnly: false
+
+    - name: dshm
+      emptyDir:
+        medium: Memory

@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nde-slurp-train-basemultislurp-intentfinetune-110-avg7-corr
+  labels:
+    user: nde
+    project: polaris
+  namespace: am-team
+spec:
+  schedulerName: ml-scheduler
+  # affinity:
+  #   nodeAffinity:
+  #     requiredDuringSchedulingIgnoredDuringExecution:
+  #       nodeSelectorTerms:
+  #       - matchExpressions:
+  #         - key: accelerator
+  #           operator: In
+  #           values:
+  #           - a100
+  #           - h100
+      # preferredDuringSchedulingIgnoredDuringExecution:
+      #   - weight: 50
+      #     preference:
+      #       matchExpressions:
+      #         - key: gpu.sku
+      #           operator: In
+      #           values: ["a100", "h100"] 
+  tolerations:
+    - key: accelerator
+      operator: Equal
+      value: a100
+      effect: NoSchedule
+    - key: accelerator
+      operator: Equal
+      value: h100
+      effect: NoSchedule
+    - key: nvidia.com/gpu
+      operator: Exists
+      effect: NoSchedule
+
+  restartPolicy: Never
+  imagePullSecrets:
+    - name: docker-melodis-readonly
+  containers:
+    - name: nde-slurp-container-basemultislurp-intentfinetune-110-avg7-corr
+      image: docker.melodis.com/soundhound/zipformer_with_slurp_streaming:v40_conv #v39_base_libri_slurp #v38clshead_biggerMLP_v2 #v38clshead #v38clshead_biggerMLP #v38clshead #v37_focalloss #v36_normal_encintent #v34_freezeenc_encintent #v35_unfreezeallenc #v34_freezeenc_encintent #v30_xai  #v32_nonlinear_classification_head #v33_unfreeze_more #v32_nonlinear_classification_head #v31_mix_slurplibri_morelibri3 #v31_mix_slurplibri #v27_get_enc_intents #v28_freeze_decoder #v26_multi_encerror #v26_multi_encerror_intentscale90 #v26_multisource_slurp #v25_intent270_logitnorm #v24_maskedintentloss270_lcs512 #v24_maskedintentloss_lcs512_libri15
+      command:
+        - "egs/librispeech/ASR/zipformer/train_slurp.py"
+        - "--world-size"
+        - "3"
+        - "--num-epochs"
+        - "300"
+        - "--use-fp16"
+        - "1"
+        - "--start-epoch"
+        - "1" ##
+        - "--causal"
+        - "1"
+        - "--max-duration"
+        - "500"
+        - "--exp-dir"
+        - "zipformer/exp-causal-slurp-encintent-basemultislurp-intentfinetune-110_avg7_corr"
+        - "--base-lr"
+        - "0.001"
+        - "--enable-spec-aug"
+        - "True"
+        - "--spec-aug-time-warp-factor"
+        - "120"
+        - "--context-size" #####
+        - "4"
+        - "--left-context-frames" ######
+        - "512"
+
+
+        # - "--decoder-dim"
+        # - "1024"
+        # - "--joiner-dim"
+        # - "1024"
+
+        - "--bpe-model"
+        # - "data/updated_tokenizer_slurp/slurp_bpe_NEW_predefined_intents.model"
+        # - "data/lang_bpe_592/libri_intent_592.model" #uppercase
+        # - "data/lang_bpe_500/bpe.model"  #uppercase
+        # - "data/lang_bpe_592_multisource/new_polaris_bpe592_lower_retrained.model" #lowercase
+        - "data/lang_bpe_500_multisource/polaris_bpe500_lower.model" #lowercase
+
+        - "--checkpoint-path"
+        - "data/base_libri_model_multislurp/exported-110-7.pt"
+        # - "data/base_libri_model_multislurp/checkpoint-110.pt"              #uppercase_libri100 + slurp (avg 10 - epoch 37, best valid)
+        # - "data/base_libri_model_lcs512/best-valid-loss.pt" #uppercase_libri
+        # - "data/base_libri_model_multisource33/best-valid-new.pt" #lowercase
+        # - "data/base_libri_model_multisource33/best-valid-21-41-avg.pt" #lowercase avg
+        # - "data/base_libri_model_multisource33/best-train-200epoch.pt" #lowercase
+        # - "data/base_libri_model_libricheck_l_ltokenizer/best-valid-loss.pt" #lowercase
+        # - "data/base_libri_model_multisource/best-valid-loss.pt" #trained on capitalised tokenizer
+
+        # - "--lr-batches"
+        # - "12000"
+
+      imagePullPolicy: Always
+      tty: true
+      env:
+        - name: USER
+          value: nde      
+      resources:
+        requests:
+          cpu: 26
+          nvidia.com/gpu: 3
+          memory: 100Gi
+          ephemeral-storage: 100Gi
+        limits:
+          cpu: 26
+          nvidia.com/gpu: 3
+          memory: 100Gi
+
+      volumeMounts:
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/download #using absolutepath here
+          subPath: organized_slurp_data_pods_lower/audio 
+          # subPath: organized_slurp_data_pods/audio 
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/data
+          # subPath: organized_slurp_data_pods/data
+          subPath: organized_slurp_data_pods_lower/data
+
+        # - name: nde-icefall-volume
+        #   mountPath: /workspace/icefall/datalibri
+        #   subPath: data
+
+        - name: nfs-workspace-rw
+          mountPath: /workspace/icefall/zipformer/exp-causal-slurp-encintent-basemultislurp-intentfinetune-110_avg7_corr #│ 2025-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+          subPath: models_streaming_slurp_new6/zipformer/run_new17_encintent_basemultislurp-intentfinetune-110_avg7_corr #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
+          readOnly: false
+
+        - name: dshm
+          mountPath: /dev/shm
+  tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+  volumes:
+    # - name: nde-icefall-volume
+    #   persistentVolumeClaim:
+    #     claimName: nde-icefall-claim
+    - name: nfs-workspace-rw
+      nfs:
+        server: gpu.fss.us-phoenix-1.development.oci.soundhound.private
+        path: /dev_gpu_filesystem/am-team/workspaces/nde
+        readOnly: false
+    - name: dshm
+      emptyDir:
+        medium: Memory
+# /mnt/gpu-phx/am-team/workspaces/nde/
