@@ -1,0 +1,16 @@
+The following files have been exported with ONNX:
+
+  decoder-epoch-200-avg-1-chunk-32-left-512.int8.onnx
+  decoder-epoch-200-avg-1-chunk-32-left-512.onnx
+  encoder-epoch-200-avg-1-chunk-32-left-512.int8.onnx
+  encoder-epoch-200-avg-1-chunk-32-left-512.onnx
+  joiner-epoch-200-avg-1-chunk-32-left-512.int8.onnx
+  joiner-epoch-200-avg-1-chunk-32-left-512.onnx
+
+this can be downloaded at:
+https://drive.google.com/drive/folders/14Yo7gcjlg_fCwRq-sJ_NYMICoNP0dsrA?usp=sharing
+
+(The model which has been exported is the one which was first trained on LibriSpeech, Common Voice, Fischer for ASR task, then finetuned on ASR task for 10 epochs using Librispeech 100 and SLURP. 
+Finally finetuned for Intent Classification Task with SLURP, where we freeze everything except our Intent classifier head to preserve ASR capability of the model.
+The 200th epoch with avg 1 while finetuning on SLURP for intent prediction has been exported to ONNX in this example.
+We use Netron to visualize model architecture)
