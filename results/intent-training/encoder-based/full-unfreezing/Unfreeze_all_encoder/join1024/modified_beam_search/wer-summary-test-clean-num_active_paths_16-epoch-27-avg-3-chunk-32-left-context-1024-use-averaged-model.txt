@@ -1,0 +1,2 @@
+settings	WER
+num_active_paths_16	44.75
