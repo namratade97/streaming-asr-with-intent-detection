@@ -1,0 +1,2 @@
+2025-07-11 15:02:46,653 INFO [train_slurp.py:1233] (3/4) Training started
+2025-07-11 15:02:46,653 INFO [train_slurp.py:1243] (3/4) Device: cuda:3
