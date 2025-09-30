@@ -1,0 +1,146 @@
+2025-02-05 10:31:44,794 INFO [streaming_decode_slurp.py:732] Decoding started
+2025-02-05 10:31:44,794 INFO [streaming_decode_slurp.py:738] Device: cuda:0
+2025-02-05 10:31:44,810 INFO [streaming_decode_slurp.py:748] {'best_train_loss': inf, 'best_valid_loss': inf, 'best_train_epoch': -1, 'best_valid_epoch': -1, 'batch_idx_train': 0, 'log_interval': 50, 'reset_interval': 200, 'valid_interval': 3000, 'feature_dim': 80, 'subsampling_factor': 4, 'warm_step': 2000, 'env_info': {'k2-version': '1.24.4', 'k2-build-type': 'Release', 'k2-with-cuda': True, 'k2-git-sha1': '75e2ed6b2fd87c22b7f3f34bad48a69984bb8755', 'k2-git-date': 'Tue Oct 29 09:02:19 2024', 'lhotse-version': '1.28.0.dev+git.b8fcd3a.clean', 'torch-version': '2.4.0', 'torch-cuda-available': True, 'torch-cuda-version': '12.1', 'python-version': '3.11', 'icefall-git-branch': None, 'icefall-git-sha1': None, 'icefall-git-date': None, 'icefall-path': '/workspace/icefall', 'k2-path': '/opt/conda/lib/python3.11/site-packages/k2/__init__.py', 'lhotse-path': '/opt/conda/lib/python3.11/site-packages/lhotse/__init__.py', 'hostname': 'nde-icefall-decoder-streaming-new17lcs-50', 'IP address': '10.244.47.200'}, 'epoch': 50, 'iter': 0, 'avg': 10, 'use_averaged_model': True, 'exp_dir': PosixPath('zipformer/exp-causal-slurp-v-new17'), 'bpe_model': 'data/lang_bpe_592/libri_intent_592.model', 'decoding_method': 'modified_beam_search', 'num_active_paths': 4, 'beam': 4, 'max_contexts': 4, 'max_states': 32, 'context_size': 2, 'num_decode_streams': 500, 'num_encoder_layers': '2,2,3,4,3,2', 'downsampling_factor': '1,2,4,8,4,2', 'feedforward_dim': '512,768,1024,1536,1024,768', 'num_heads': '4,4,4,8,4,4', 'encoder_dim': '192,256,384,512,384,256', 'query_head_dim': '32', 'value_head_dim': '12', 'pos_head_dim': '4', 'pos_dim': 48, 'encoder_unmasked_dim': '192,192,256,256,256,192', 'cnn_module_kernel': '31,31,15,15,15,31', 'decoder_dim': 512, 'joiner_dim': 512, 'causal': True, 'chunk_size': '32', 'left_context_frames': '512', 'use_transducer': True, 'use_ctc': False, 'manifest_dir': PosixPath('data/fbank'), 'max_duration': 200.0, 'bucketing_sampler': True, 'num_buckets': 30, 'concatenate_cuts': False, 'duration_factor': 1.0, 'gap': 1.0, 'on_the_fly_feats': False, 'shuffle': True, 'drop_last': True, 'return_cuts': True, 'num_workers': 2, 'enable_spec_aug': True, 'spec_aug_time_warp_factor': 80, 'input_strategy': 'PrecomputedFeatures', 'res_dir': PosixPath('zipformer/exp-causal-slurp-v-new17/streaming/modified_beam_search'), 'suffix': 'epoch-50-avg-10-chunk-32-left-context-512-use-averaged-model', 'blank_id': 0, 'unk_id': 2, 'vocab_size': 592}
+2025-02-05 10:31:44,811 INFO [streaming_decode_slurp.py:750] About to create model
+2025-02-05 10:31:45,143 INFO [streaming_decode_slurp.py:817] Calculating the averaged model over epoch range from 40 (excluded) to 50
+2025-02-05 10:31:54,965 INFO [streaming_decode_slurp.py:842] Number of model parameters: 66299623
+2025-02-05 10:31:54,965 INFO [asr_datamodule_slurp.py:538] About to get test-clean cuts
+2025-02-05 10:31:55,214 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 0.
+2025-02-05 10:31:56,661 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 100.
+2025-02-05 10:31:57,965 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 200.
+2025-02-05 10:31:59,264 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 300.
+2025-02-05 10:32:00,713 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 400.
+2025-02-05 10:32:06,657 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 500.
+2025-02-05 10:32:09,435 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 600.
+2025-02-05 10:32:12,173 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 700.
+2025-02-05 10:32:15,286 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 800.
+2025-02-05 10:32:17,904 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 900.
+2025-02-05 10:32:20,597 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1000.
+2025-02-05 10:32:25,326 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1100.
+2025-02-05 10:32:28,569 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1200.
+2025-02-05 10:32:33,481 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1300.
+2025-02-05 10:32:36,475 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1400.
+2025-02-05 10:32:39,312 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1500.
+2025-02-05 10:32:42,394 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1600.
+2025-02-05 10:32:45,061 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1700.
+2025-02-05 10:32:47,782 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1800.
+2025-02-05 10:32:50,684 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 1900.
+2025-02-05 10:32:53,393 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2000.
+2025-02-05 10:32:56,238 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2100.
+2025-02-05 10:32:59,029 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2200.
+2025-02-05 10:33:03,356 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2300.
+2025-02-05 10:33:06,121 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2400.
+2025-02-05 10:33:08,922 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2500.
+2025-02-05 10:33:11,625 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2600.
+2025-02-05 10:33:15,203 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2700.
+2025-02-05 10:33:18,398 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2800.
+2025-02-05 10:33:21,064 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 2900.
+2025-02-05 10:33:25,387 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3000.
+2025-02-05 10:33:28,299 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3100.
+2025-02-05 10:33:31,340 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3200.
+2025-02-05 10:33:33,964 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3300.
+2025-02-05 10:33:36,937 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3400.
+2025-02-05 10:33:39,684 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3500.
+2025-02-05 10:33:42,414 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3600.
+2025-02-05 10:33:45,253 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3700.
+2025-02-05 10:33:48,326 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3800.
+2025-02-05 10:33:51,212 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 3900.
+2025-02-05 10:33:54,112 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4000.
+2025-02-05 10:33:58,352 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4100.
+2025-02-05 10:34:01,637 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4200.
+2025-02-05 10:34:04,352 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4300.
+2025-02-05 10:34:07,144 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4400.
+2025-02-05 10:34:10,114 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4500.
+2025-02-05 10:34:13,015 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4600.
+2025-02-05 10:34:16,205 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4700.
+2025-02-05 10:34:20,306 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4800.
+2025-02-05 10:34:23,249 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 4900.
+2025-02-05 10:34:25,930 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5000.
+2025-02-05 10:34:28,829 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5100.
+2025-02-05 10:34:32,212 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5200.
+2025-02-05 10:34:35,234 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5300.
+2025-02-05 10:34:38,312 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5400.
+2025-02-05 10:34:41,110 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5500.
+2025-02-05 10:34:45,337 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5600.
+2025-02-05 10:34:47,963 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5700.
+2025-02-05 10:34:50,644 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5800.
+2025-02-05 10:34:53,626 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 5900.
+2025-02-05 10:34:56,503 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6000.
+2025-02-05 10:34:59,270 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6100.
+2025-02-05 10:35:02,088 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6200.
+2025-02-05 10:35:04,856 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6300.
+2025-02-05 10:35:09,778 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6400.
+2025-02-05 10:35:12,511 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6500.
+2025-02-05 10:35:15,261 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6600.
+2025-02-05 10:35:17,921 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6700.
+2025-02-05 10:35:22,246 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6800.
+2025-02-05 10:35:23,301 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 6900.
+2025-02-05 10:35:27,486 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7000.
+2025-02-05 10:35:30,513 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7100.
+2025-02-05 10:35:33,345 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7200.
+2025-02-05 10:35:34,731 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7300.
+2025-02-05 10:35:39,236 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7400.
+2025-02-05 10:35:42,487 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7500.
+2025-02-05 10:35:46,444 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7600.
+2025-02-05 10:35:49,736 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7700.
+2025-02-05 10:35:53,617 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7800.
+2025-02-05 10:35:56,229 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 7900.
+2025-02-05 10:36:00,956 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8000.
+2025-02-05 10:36:03,872 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8100.
+2025-02-05 10:36:06,625 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8200.
+2025-02-05 10:36:09,515 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8300.
+2025-02-05 10:36:12,241 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8400.
+2025-02-05 10:36:14,881 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8500.
+2025-02-05 10:36:17,887 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8600.
+2025-02-05 10:36:22,238 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8700.
+2025-02-05 10:36:25,036 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8800.
+2025-02-05 10:36:27,657 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 8900.
+2025-02-05 10:36:30,960 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9000.
+2025-02-05 10:36:33,714 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9100.
+2025-02-05 10:36:36,424 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9200.
+2025-02-05 10:36:39,428 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9300.
+2025-02-05 10:36:42,040 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9400.
+2025-02-05 10:36:44,844 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9500.
+2025-02-05 10:36:47,590 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9600.
+2025-02-05 10:36:50,610 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9700.
+2025-02-05 10:36:55,073 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9800.
+2025-02-05 10:36:57,965 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 9900.
+2025-02-05 10:37:01,253 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10000.
+2025-02-05 10:37:03,890 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10100.
+2025-02-05 10:37:06,886 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10200.
+2025-02-05 10:37:09,763 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10300.
+2025-02-05 10:37:14,403 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10400.
+2025-02-05 10:37:17,877 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10500.
+2025-02-05 10:37:21,350 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10600.
+2025-02-05 10:37:25,165 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10700.
+2025-02-05 10:37:28,809 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10800.
+2025-02-05 10:37:31,969 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 10900.
+2025-02-05 10:37:35,282 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11000.
+2025-02-05 10:37:39,143 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11100.
+2025-02-05 10:37:44,477 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11200.
+2025-02-05 10:37:48,093 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11300.
+2025-02-05 10:37:51,302 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11400.
+2025-02-05 10:37:53,936 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11500.
+2025-02-05 10:37:56,680 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11600.
+2025-02-05 10:37:59,712 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11700.
+2025-02-05 10:38:02,356 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11800.
+2025-02-05 10:38:05,136 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 11900.
+2025-02-05 10:38:07,799 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12000.
+2025-02-05 10:38:12,489 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12100.
+2025-02-05 10:38:15,211 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12200.
+2025-02-05 10:38:17,829 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12300.
+2025-02-05 10:38:20,549 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12400.
+2025-02-05 10:38:23,308 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12500.
+2025-02-05 10:38:26,321 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12600.
+2025-02-05 10:38:29,563 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12700.
+2025-02-05 10:38:32,499 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12800.
+2025-02-05 10:38:35,230 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 12900.
+2025-02-05 10:38:37,913 INFO [streaming_decode_slurp.py:621] Cuts processed until now is 13000.
+2025-02-05 10:38:45,617 INFO [streaming_decode_slurp.py:665] The transcripts are stored in zipformer/exp-causal-slurp-v-new17/streaming/modified_beam_search/recogs-test-clean-num_active_paths_4-epoch-50-avg-10-chunk-32-left-context-512-use-averaged-model.txt
+2025-02-05 10:38:45,742 INFO [utils.py:657] [test-clean-num_active_paths_4] %WER 47.36% [46208 / 97567, 2903 ins, 24313 del, 18992 sub ]
+2025-02-05 10:38:46,013 INFO [streaming_decode_slurp.py:678] Wrote detailed error stats to zipformer/exp-causal-slurp-v-new17/streaming/modified_beam_search/errs-test-clean-num_active_paths_4-epoch-50-avg-10-chunk-32-left-context-512-use-averaged-model.txt
+2025-02-05 10:38:46,019 INFO [streaming_decode_slurp.py:694] 
+For test-clean, WER of different settings are:
+num_active_paths_4	47.36	best for test-clean
+
+2025-02-05 10:38:46,019 INFO [streaming_decode_slurp.py:869] Done!
