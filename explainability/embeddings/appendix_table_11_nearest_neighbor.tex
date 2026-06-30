@@ -1,0 +1,367 @@
+\subsection*{Part 1: Distance and Text Baselines}
+{\small
+\begin{longtable}{p{2.6cm} p{2.6cm} c r p{3.4cm} p{3.4cm}}
+\caption{Acoustic Neighborhood Proximity Identification} \\
+\toprule
+\textbf{Q. Audio ID} & \textbf{N. Audio ID} & \textbf{Rk} & \textbf{Dist.} & \textbf{Q. Text} & \textbf{N. Text} \\
+\midrule
+audio-1492780293-1791 & audio-1492780293-headset-1790 & 1 & 0.0684 & show weather & show weather \\
+audio-1492780293-1791 & audio-1495378347-3237 & 2 & 0.1916 & show weather & what is the current weather \\
+audio-1492780293-1791 & audio-1498569240-headset-1789 & 3 & 0.2027 & show weather & show weather \\
+audio-1492780293-1791 & audio-1501691206-headset-6580 & 4 & 0.2332 & show weather & mild or heavy weather \\
+audio-1492780293-1791 & audio-1494512662-headset-7916 & 5 & 0.2487 & show weather & info on this week weather \\
+audio-1492780293-1791 & audio-1492784894-headset-1792 & 6 & 0.2594 & show weather & show weather \\
+audio-1492780293-1791 & audio-1501691206-6581 & 7 & 0.2706 & show weather & mild or heavy weather \\
+audio-1492780293-1791 & audio-1502377780-headset-6582 & 8 & 0.2712 & show weather & mild or heavy weather \\
+audio-1492780293-1791 & audio-1498573567-headset-4485 & 9 & 0.2731 & show weather & post a new status on facebook saying that i am enjoying the nice weather \\
+audio-1492780293-1791 & audio-1495378347-headset-3236 & 10 & 0.2820 & show weather & what is the current weather \\
+audio-1492780293-1791 & audio-1494512662-7917 & 11 & 0.2824 & show weather & info on this week weather \\
+audio-1492780293-1791 & audio-1490966883-headset-3234 & 12 & 0.2852 & show weather & what is the current weather \\
+audio-1492780293-1791 & audio-1501155969-headset-1865 & 13 & 0.2894 & show weather & what is the weather \\
+audio-1492780293-1791 & audio-1497886976-4483 & 14 & 0.3122 & show weather & post a new status on facebook saying that i am enjoying the nice weather \\
+audio-1492780293-1791 & audio-1501152862-headset-4487 & 15 & 0.3197 & show weather & post a new status on facebook saying that i am enjoying the nice weather \\
+\midrule
+ &  &  &  &  & \\ % Visual block separation row
+\midrule
+audio--1504197702-1265 & audio--1504198735-1267 & 1 & 0.0501 & please resume my audiobook & please resume my audiobook \\
+audio--1504197702-1265 & audio--1505406797-headset-1270 & 2 & 0.0603 & please resume my audiobook & please resume my audiobook \\
+audio--1504197702-1265 & audio--1504198735-headset-1266 & 3 & 0.0649 & please resume my audiobook & please resume my audiobook \\
+audio--1504197702-1265 & audio--1505407637-1273 & 4 & 0.0980 & please resume my audiobook & please resume my audiobook \\
+audio--1504197702-1265 & audio--1505406999-2969 & 5 & 0.1419 & please resume my audiobook & play the twilight book \\
+audio--1504197702-1265 & audio--1504193142-headset-2525 & 6 & 0.1515 & please resume my audiobook & pause the book \\
+audio--1504197702-1265 & audio-1500037189-5012 & 7 & 0.1671 & please resume my audiobook & what lists are in my notebook \\
+audio--1504197702-1265 & audio--1504193140-2524 & 8 & 0.1715 & please resume my audiobook & pause the book \\
+audio--1504197702-1265 & audio--1504193140-headset-2523 & 9 & 0.1788 & please resume my audiobook & pause the book \\
+audio--1504197702-1265 & audio--1504194599-headset-1262 & 10 & 0.1806 & please resume my audiobook & please resume my audiobook \\
+audio--1504197702-1265 & audio-1502894512-headset-3127 & 11 & 0.1844 & please resume my audiobook & post this video to facebook \\
+audio--1504197702-1265 & audio--1505407266-2530 & 12 & 0.1872 & please resume my audiobook & pause the book \\
+audio--1504197702-1265 & audio-1497030693-4902 & 13 & 0.1927 & please resume my audiobook & is there anything new in my mailbox \\
+audio--1504197702-1265 & audio-1502310211-5828 & 14 & 0.1929 & please resume my audiobook & find a taxi to book \\
+audio--1504197702-1265 & audio--1505407637-headset-1272 & 15 & 0.1977 & please resume my audiobook & please resume my audiobook \\
+\bottomrule
+\end{longtable}
+}
+\vspace{0.1cm}
+{\footnotesize\noindent\raggedright \textbf{Note on Headings (Part 1):} \textbf{Q. / N. Audio ID}: Query / Neighbor Audio Clip Name; \textbf{Rk}: Proximity Rank; \textbf{Dist.}: Cosine Distance between vector embeddings; \textbf{Q. / N. Text}: Transcribed Reference Text for the Query and Neighbor utterances.\par}
+
+\subsection*{Part 2: Multi-Level Overlap Metrics}
+{\small
+\begin{longtable}{p{4.0cm} p{4.0cm} c ccc}
+\caption{Lexical, Character, and Phonetic Overlap Analysis} \\
+\toprule
+\textbf{Q. Text} & \textbf{N. Text} & \textbf{Rk} & \textbf{Word Ov.} & \textbf{Char Ov.} & \textbf{Phon. Ov.} \\
+\midrule
+show weather & show weather & 1 & 1.0000 & 1.0000 & 1.0000 \\
+show weather & what is the current weather & 2 & 0.1667 & 0.3704 & 0.2857 \\
+show weather & show weather & 3 & 1.0000 & 1.0000 & 1.0000 \\
+show weather & mild or heavy weather & 4 & 0.2000 & 0.4286 & 0.2667 \\
+show weather & info on this week weather & 5 & 0.1667 & 0.4000 & 0.2857 \\
+show weather & show weather & 6 & 1.0000 & 1.0000 & 1.0000 \\
+show weather & mild or heavy weather & 7 & 0.2000 & 0.4286 & 0.2667 \\
+show weather & mild or heavy weather & 8 & 0.2000 & 0.4286 & 0.2667 \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 9 & 0.0667 & 0.1528 & 0.1923 \\
+show weather & what is the current weather & 10 & 0.1667 & 0.3704 & 0.2857 \\
+show weather & info on this week weather & 11 & 0.1667 & 0.4000 & 0.2857 \\
+show weather & what is the current weather & 12 & 0.1667 & 0.3704 & 0.2857 \\
+show weather & what is the weather & 13 & 0.2000 & 0.4737 & 0.3636 \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 14 & 0.0667 & 0.1528 & 0.1923 \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 15 & 0.0667 & 0.1528 & 0.1923 \\
+\midrule
+ &  &  &  &  & \\ % Visual block separation row
+\midrule
+please resume my audiobook & please resume my audiobook & 1 & 1.0000 & 1.0000 & 1.0000 \\
+please resume my audiobook & please resume my audiobook & 2 & 1.0000 & 1.0000 & 1.0000 \\
+please resume my audiobook & please resume my audiobook & 3 & 1.0000 & 1.0000 & 1.0000 \\
+please resume my audiobook & please resume my audiobook & 4 & 1.0000 & 1.0000 & 1.0000 \\
+please resume my audiobook & play the twilight book & 5 & 0.0000 & 0.3462 & 0.2273 \\
+please resume my audiobook & pause the book & 6 & 0.0000 & 0.3846 & 0.2778 \\
+please resume my audiobook & what lists are in my notebook & 7 & 0.1111 & 0.3448 & 0.2400 \\
+please resume my audiobook & pause the book & 8 & 0.0000 & 0.3846 & 0.2778 \\
+please resume my audiobook & pause the book & 9 & 0.0000 & 0.3846 & 0.2778 \\
+please resume my audiobook & please resume my audiobook & 10 & 1.0000 & 1.0000 & 1.0000 \\
+please resume my audiobook & post this video to facebook & 11 & 0.0000 & 0.2963 & 0.2917 \\
+please resume my audiobook & pause the book & 12 & 0.0000 & 0.3846 & 0.2778 \\
+please resume my audiobook & is there anything new in my mailbox & 13 & 0.1000 & 0.2571 & 0.4000 \\
+please resume my audiobook & find a taxi to book & 14 & 0.0000 & 0.2692 & 0.2727 \\
+please resume my audiobook & please resume my audiobook & 15 & 1.0000 & 1.0000 & 1.0000 \\
+\bottomrule
+\end{longtable}
+}
+\vspace{0.1cm}
+{\footnotesize\noindent\raggedright \textbf{Note on Headings (Part 2):} \textbf{Q. / N. Text}: Query / Neighbor Text; \textbf{Rk}: Proximity Rank; \textbf{Word Ov. / Char Ov. / Phon. Ov.}: Word / Character / Phoneme Overlap scores (scaled 0.0 to 1.0 indicating structural similarities).\par}
+
+\subsection*{Part 3: Intent Classification Alignment}
+{\small
+\begin{longtable}{p{3.8cm} p{3.8cm} c ll c}
+\caption{NLU Intent Categorization and Matching Performance} \\
+\toprule
+\textbf{Q. Text} & \textbf{N. Text} & \textbf{Rk} & \textbf{Q. Intent} & \textbf{N. Intent} & \textbf{Int. M.} \\
+\midrule
+show weather & show weather & 1 & weather\_query & weather\_query & True \\
+show weather & what is the current weather & 2 & weather\_query & query & False \\
+show weather & show weather & 3 & weather\_query & weather\_query & True \\
+show weather & mild or heavy weather & 4 & weather\_query & weather\_query & True \\
+show weather & info on this week weather & 5 & weather\_query & weather\_query & True \\
+show weather & show weather & 6 & weather\_query & weather\_query & True \\
+show weather & mild or heavy weather & 7 & weather\_query & weather\_query & True \\
+show weather & mild or heavy weather & 8 & weather\_query & weather\_query & True \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 9 & weather\_query & social\_post & False \\
+show weather & what is the current weather & 10 & weather\_query & query & False \\
+show weather & info on this week weather & 11 & weather\_query & weather\_query & True \\
+show weather & what is the current weather & 12 & weather\_query & query & False \\
+show weather & what is the weather & 13 & weather\_query & weather\_query & True \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 14 & weather\_query & social\_post & False \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 15 & weather\_query & social\_post & False \\
+\midrule
+ &  &  &  &  & \\ % Visual block separation row
+\midrule
+please resume my audiobook & please resume my audiobook & 1 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & please resume my audiobook & 2 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & please resume my audiobook & 3 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & please resume my audiobook & 4 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & play the twilight book & 5 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & pause the book & 6 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & what lists are in my notebook & 7 & play\_audiobook & lists\_query & False \\
+please resume my audiobook & pause the book & 8 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & pause the book & 9 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & please resume my audiobook & 10 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & post this video to facebook & 11 & play\_audiobook & social\_post & False \\
+please resume my audiobook & pause the book & 12 & play\_audiobook & play\_audiobook & True \\
+please resume my audiobook & is there anything new in my mailbox & 13 & play\_audiobook & email\_query & False \\
+please resume my audiobook & find a taxi to book & 14 & play\_audiobook & transport\_taxi & False \\
+please resume my audiobook & please resume my audiobook & 15 & play\_audiobook & play\_audiobook & True \\
+\bottomrule
+\end{longtable}
+}
+\vspace{0.1cm}
+{\footnotesize\noindent\raggedright \textbf{Note on Headings (Part 3):} \textbf{Q. / N. Intent}: Goal category labeled by the NLU; \textbf{Int. M.}: Intent Match (True/False boolean indicating whether the target classifications match exactly).\par}
+
+\subsection*{Part 4: Speaker Identity Mapping}
+{\small
+\begin{longtable}{ll c ll c}
+\caption{Acoustic Neighborhood Speaker Identity Ground Truth} \\
+\toprule
+\textbf{Q. Audio ID} & \textbf{N. Audio ID} & \textbf{Rk} & \textbf{Q. User} & \textbf{N. User} & \textbf{Spk. M.} \\
+\midrule
+audio-1492780293-1791 & audio-1492780293-headset-1790 & 1 & UNK-322 & UNK-322 & True \\
+audio-1492780293-1791 & audio-1495378347-3237 & 2 & UNK-322 & UNK-335 & False \\
+audio-1492780293-1791 & audio-1498569240-headset-1789 & 3 & UNK-322 & FE-249 & False \\
+audio-1492780293-1791 & audio-1501691206-headset-6580 & 4 & UNK-322 & ME-369 & False \\
+audio-1492780293-1791 & audio-1494512662-headset-7916 & 5 & UNK-322 & UNK-329 & False \\
+audio-1492780293-1791 & audio-1492784894-headset-1792 & 6 & UNK-322 & UNK-323 & False \\
+audio-1492780293-1791 & audio-1501691206-6581 & 7 & UNK-322 & ME-369 & False \\
+audio-1492780293-1791 & audio-1502377780-headset-6582 & 8 & UNK-322 & ME-473 & False \\
+audio-1492780293-1791 & audio-1498573567-headset-4485 & 9 & UNK-322 & ME-369 & False \\
+audio-1492780293-1791 & audio-1495378347-headset-3236 & 10 & UNK-322 & UNK-335 & False \\
+audio-1492780293-1791 & audio-1494512662-7917 & 11 & UNK-322 & UNK-329 & False \\
+audio-1492780293-1791 & audio-1490966883-headset-3234 & 12 & UNK-322 & MO-164 & False \\
+audio-1492780293-1791 & audio-1501155969-headset-1865 & 13 & UNK-322 & MO-433 & False \\
+audio-1492780293-1791 & audio-1497886976-4483 & 14 & UNK-322 & FO-234 & False \\
+audio-1492780293-1791 & audio-1501152862-headset-4487 & 15 & UNK-322 & MO-431 & False \\
+\midrule
+ &  &  &  &  & \\ % Visual block separation row
+\midrule
+audio--1504197702-1265 & audio--1504198735-1267 & 1 & FO-488 & FO-488 & True \\
+audio--1504197702-1265 & audio--1505406797-headset-1270 & 2 & FO-488 & FO-493 & False \\
+audio--1504197702-1265 & audio--1504198735-headset-1266 & 3 & FO-488 & FO-488 & True \\
+audio--1504197702-1265 & audio--1505407637-1273 & 4 & FO-488 & FO-493 & False \\
+audio--1504197702-1265 & audio--1505406999-2969 & 5 & FO-488 & FO-493 & False \\
+audio--1504197702-1265 & audio--1504193142-headset-2525 & 6 & FO-488 & FO-488 & True \\
+audio--1504197702-1265 & audio-1500037189-5012 & 7 & FO-488 & FO-420 & False \\
+audio--1504197702-1265 & audio--1504193140-2524 & 8 & FO-488 & FO-488 & True \\
+audio--1504197702-1265 & audio--1504193140-headset-2523 & 9 & FO-488 & FO-488 & True \\
+audio--1504197702-1265 & audio--1504194599-headset-1262 & 10 & FO-488 & FO-488 & True \\
+audio--1504197702-1265 & audio-1502894512-headset-3127 & 11 & FO-488 & FO-462 & False \\
+audio--1504197702-1265 & audio--1505407266-2530 & 12 & FO-488 & FO-493 & False \\
+audio--1504197702-1265 & audio-1497030693-4902 & 13 & FO-488 & MO-116 & False \\
+audio--1504197702-1265 & audio-1502310211-5828 & 14 & FO-488 & MO-465 & False \\
+audio--1504197702-1265 & audio--1505407637-headset-1272 & 15 & FO-488 & FO-493 & False \\
+\bottomrule
+\end{longtable}
+}
+\vspace{0.1cm}
+{\footnotesize\noindent\raggedright \textbf{Note on Headings (Part 4):} \textbf{Q. / N. User}: Anonymized speaker tracking code; \textbf{Spk. M.}: Speaker Match (True/False boolean indicating whether the neighbor and the query were recorded by the exact same individual).\par}
+
+\subsection*{Part 5: Detailed Demographic Profiles}
+{\small
+\begin{longtable}{p{2.1cm} p{2.1cm} c cccc cc}
+\caption{Speaker Demographic Flags and Profile Matching} \\
+\toprule
+\textbf{Q. Audio ID} & \textbf{N. Audio ID} & \textbf{Rk} & \textbf{Q. Gnd.} & \textbf{N. Gnd.} & \textbf{Q. Lang.} & \textbf{N. Lang.} & \textbf{Gnd. M.} & \textbf{Lang. M.} \\
+\midrule
+audio-1492780293-1791 & audio-1492780293-headset-1790 & 1 & UNK & UNK & UNK & UNK & False & False \\
+audio-1492780293-1791 & audio-1495378347-3237 & 2 & UNK & UNK & UNK & UNK & False & False \\
+audio-1492780293-1791 & audio-1498569240-headset-1789 & 3 & UNK & F & UNK & Native & False & False \\
+audio-1492780293-1791 & audio-1501691206-headset-6580 & 4 & UNK & M & UNK & Native & False & False \\
+audio-1492780293-1791 & audio-1494512662-headset-7916 & 5 & UNK & UNK & UNK & UNK & False & False \\
+audio-1492780293-1791 & audio-1492784894-headset-1792 & 6 & UNK & UNK & UNK & UNK & False & False \\
+audio-1492780293-1791 & audio-1501691206-6581 & 7 & UNK & M & UNK & Native & False & False \\
+audio-1492780293-1791 & audio-1502377780-headset-6582 & 8 & UNK & M & UNK & Native & False & False \\
+audio-1492780293-1791 & audio-1498573567-headset-4485 & 9 & UNK & M & UNK & Native & False & False \\
+audio-1492780293-1791 & audio-1495378347-headset-3236 & 10 & UNK & UNK & UNK & UNK & False & False \\
+audio-1492780293-1791 & audio-1494512662-7917 & 11 & UNK & UNK & UNK & UNK & False & False \\
+audio-1492780293-1791 & audio-1490966883-headset-3234 & 12 & UNK & M & UNK & NonNative & False & False \\
+audio-1492780293-1791 & audio-1501155969-headset-1865 & 13 & UNK & M & UNK & NonNative & False & False \\
+audio-1492780293-1791 & audio-1497886976-4483 & 14 & UNK & F & UNK & NonNative & False & False \\
+audio-1492780293-1791 & audio-1501152862-headset-4487 & 15 & UNK & M & UNK & NonNative & False & False \\
+\midrule
+ &  &  &  &  &  &  &  & \\ % Visual block separation row
+\midrule
+audio--1504197702-1265 & audio--1504198735-1267 & 1 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio--1505406797-headset-1270 & 2 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio--1504198735-headset-1266 & 3 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio--1505407637-1273 & 4 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio--1505406999-2969 & 5 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio--1504193142-headset-2525 & 6 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio-1500037189-5012 & 7 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio--1504193140-2524 & 8 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio--1504193140-headset-2523 & 9 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio--1504194599-headset-1262 & 10 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio-1502894512-headset-3127 & 11 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio--1505407266-2530 & 12 & F & F & NonNative & NonNative & True & True \\
+audio--1504197702-1265 & audio-1497030693-4902 & 13 & F & M & NonNative & NonNative & False & True \\
+audio--1504197702-1265 & audio-1502310211-5828 & 14 & F & M & NonNative & NonNative & False & True \\
+audio--1504197702-1265 & audio--1505407637-headset-1272 & 15 & F & F & NonNative & NonNative & True & True \\
+\bottomrule
+\end{longtable}
+}
+\vspace{0.1cm}
+{\footnotesize\noindent\raggedright \textbf{Note on Headings \& Demographics (Part 5):} \textbf{Q. / N. User} properties decode SLURP string keys using the \texttt{GenderLanguage-Id} template: Gender flags show \textbf{F} (Female), \textbf{M} (Male), or \textbf{UNK}; Language heritage tracks native status where \textbf{E} is native English and \textbf{O} indicates any other language. Thus, \texttt{FE-488} represents a native-English female speaker, and \texttt{MO-116} stands for a non-native male speaker. \textbf{Q. / N. Gnd.}: Isolated Gender label; \textbf{Q. / N. Lang.}: Native vs. NonNative accent status; \textbf{Gnd. M. / Lang. M.}: Gender Match / Language Match validation states checking if demographic profiles correspond.\par}
+
+\subsection*{Part 6: High-Level Scenario Alignment}
+{\small
+\begin{longtable}{p{4.0cm} p{4.0cm} c ll c}
+\caption{Contextual Domain and Scenario Cluster Analysis} \\
+\toprule
+\textbf{Q. Text} & \textbf{N. Text} & \textbf{Rk} & \textbf{Q. Scen.} & \textbf{N. Scen.} & \textbf{Scen. M.} \\
+\midrule
+show weather & show weather & 1 & weather & weather & True \\
+show weather & what is the current weather & 2 & weather & weather & True \\
+show weather & show weather & 3 & weather & weather & True \\
+show weather & mild or heavy weather & 4 & weather & weather & True \\
+show weather & info on this week weather & 5 & weather & weather & True \\
+show weather & show weather & 6 & weather & weather & True \\
+show weather & mild or heavy weather & 7 & weather & weather & True \\
+show weather & mild or heavy weather & 8 & weather & weather & True \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 9 & weather & social & False \\
+show weather & what is the current weather & 10 & weather & weather & True \\
+show weather & info on this week weather & 11 & weather & weather & True \\
+show weather & what is the current weather & 12 & weather & weather & True \\
+show weather & what is the weather & 13 & weather & weather & True \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 14 & weather & social & False \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 15 & weather & social & False \\
+\midrule
+ &  &  &  &  & \\ % Visual block separation row
+\midrule
+please resume my audiobook & please resume my audiobook & 1 & play & play & True \\
+please resume my audiobook & please resume my audiobook & 2 & play & play & True \\
+please resume my audiobook & please resume my audiobook & 3 & play & play & True \\
+please resume my audiobook & please resume my audiobook & 4 & play & play & True \\
+please resume my audiobook & play the twilight book & 5 & play & play & True \\
+please resume my audiobook & pause the book & 6 & play & play & True \\
+please resume my audiobook & what lists are in my notebook & 7 & play & lists & False \\
+please resume my audiobook & pause the book & 8 & play & play & True \\
+please resume my audiobook & pause the book & 9 & play & play & True \\
+please resume my audiobook & please resume my audiobook & 10 & play & play & True \\
+please resume my audiobook & post this video to facebook & 11 & play & social & False \\
+please resume my audiobook & pause the book & 12 & play & play & True \\
+please resume my audiobook & is there anything new in my mailbox & 13 & play & email & False \\
+please resume my audiobook & find a taxi to book & 14 & play & transport & False \\
+please resume my audiobook & please resume my audiobook & 15 & play & play & True \\
+\bottomrule
+\end{longtable}
+}
+\vspace{0.1cm}
+{\footnotesize\noindent\raggedright \textbf{Note on Headings (Part 6):} \textbf{Q. / N. Scen.}: High-level semantic scenario context domain (e.g., \textit{lists}, \textit{alarm}, \textit{calendar}); \textbf{Scen. M.}: Scenario Match (True/False boolean indicating if both items fall inside the identical system scenario framework).\par}
+
+\subsection*{Part 7: Core System Action Mapping}
+{\small
+\begin{longtable}{p{4.0cm} p{4.0cm} c ll c}
+\caption{Functional System Action Parsing Evaluation} \\
+\toprule
+\textbf{Q. Text} & \textbf{N. Text} & \textbf{Rk} & \textbf{Q. Act.} & \textbf{N. Act.} & \textbf{Act. M.} \\
+\midrule
+show weather & show weather & 1 & query & query & True \\
+show weather & what is the current weather & 2 & query & query & True \\
+show weather & show weather & 3 & query & query & True \\
+show weather & mild or heavy weather & 4 & query & query & True \\
+show weather & info on this week weather & 5 & query & query & True \\
+show weather & show weather & 6 & query & query & True \\
+show weather & mild or heavy weather & 7 & query & query & True \\
+show weather & mild or heavy weather & 8 & query & query & True \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 9 & query & post & False \\
+show weather & what is the current weather & 10 & query & query & True \\
+show weather & info on this week weather & 11 & query & query & True \\
+show weather & what is the current weather & 12 & query & query & True \\
+show weather & what is the weather & 13 & query & query & True \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 14 & query & post & False \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 15 & query & post & False \\
+\midrule
+ &  &  &  &  & \\ % Visual block separation row
+\midrule
+please resume my audiobook & please resume my audiobook & 1 & audiobook & audiobook & True \\
+please resume my audiobook & please resume my audiobook & 2 & audiobook & audiobook & True \\
+please resume my audiobook & please resume my audiobook & 3 & audiobook & audiobook & True \\
+please resume my audiobook & please resume my audiobook & 4 & audiobook & audiobook & True \\
+please resume my audiobook & play the twilight book & 5 & audiobook & audiobook & True \\
+please resume my audiobook & pause the book & 6 & audiobook & audiobook & True \\
+please resume my audiobook & what lists are in my notebook & 7 & audiobook & query & False \\
+please resume my audiobook & pause the book & 8 & audiobook & audiobook & True \\
+please resume my audiobook & pause the book & 9 & audiobook & audiobook & True \\
+please resume my audiobook & please resume my audiobook & 10 & audiobook & audiobook & True \\
+please resume my audiobook & post this video to facebook & 11 & audiobook & post & False \\
+please resume my audiobook & pause the book & 12 & audiobook & audiobook & True \\
+please resume my audiobook & is there anything new in my mailbox & 13 & audiobook & query & False \\
+please resume my audiobook & find a taxi to book & 14 & audiobook & taxi & False \\
+please resume my audiobook & please resume my audiobook & 15 & audiobook & audiobook & True \\
+\bottomrule
+\end{longtable}
+}
+\vspace{0.1cm}
+{\footnotesize\noindent\raggedright \textbf{Note on Headings (Part 7):} \textbf{Q. / N. Act.}: Specific automated system execution action assigned to the intent (e.g., \textit{query}, \textit{remove}, \textit{set}); \textbf{Act. M.}: Action Match (True/False evaluation logging identical functional processing tracks).\par}
+
+\subsection*{Part 8: Contextual Entity Slots}
+{\small
+\begin{longtable}{p{3.2cm} p{3.2cm} c p{2.4cm} p{2.4cm} c}
+\caption{Variable Slot Extraction and Entity Overlap Metrics} \\
+\toprule
+\textbf{Q. Text} & \textbf{N. Text} & \textbf{Rk} & \textbf{Q. Entities} & \textbf{N. Entities} & \textbf{Ent. Ov.} \\
+\midrule
+show weather & show weather & 1 & [] & [] & 0 \\
+show weather & what is the current weather & 2 & [] & [] & 0 \\
+show weather & show weather & 3 & [] & [] & 0 \\
+show weather & mild or heavy weather & 4 & [] & ['weather\_descriptor', 'weather\_descriptor'] & 0 \\
+show weather & info on this week weather & 5 & [] & ['date'] & 0 \\
+show weather & show weather & 6 & [] & [] & 0 \\
+show weather & mild or heavy weather & 7 & [] & ['weather\_descriptor', 'weather\_descriptor'] & 0 \\
+show weather & mild or heavy weather & 8 & [] & ['weather\_descriptor', 'weather\_descriptor'] & 0 \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 9 & [] & ['media\_type', 'weather\_descriptor'] & 0 \\
+show weather & what is the current weather & 10 & [] & [] & 0 \\
+show weather & info on this week weather & 11 & [] & ['date'] & 0 \\
+show weather & what is the current weather & 12 & [] & [] & 0 \\
+show weather & what is the weather & 13 & [] & [] & 0 \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 14 & [] & ['media\_type', 'weather\_descriptor'] & 0 \\
+show weather & post a new status on facebook saying that i am enjoying the nice weather & 15 & [] & ['media\_type', 'weather\_descriptor'] & 0 \\
+\midrule
+ &  &  &  &  & \\ % Visual block separation row
+\midrule
+please resume my audiobook & please resume my audiobook & 1 & ['player\_setting', 'media\_type'] & ['player\_setting', 'media\_type'] & 2 \\
+please resume my audiobook & please resume my audiobook & 2 & ['player\_setting', 'media\_type'] & ['player\_setting', 'media\_type'] & 2 \\
+please resume my audiobook & please resume my audiobook & 3 & ['player\_setting', 'media\_type'] & ['player\_setting', 'media\_type'] & 2 \\
+please resume my audiobook & please resume my audiobook & 4 & ['player\_setting', 'media\_type'] & ['player\_setting', 'media\_type'] & 2 \\
+please resume my audiobook & play the twilight book & 5 & ['player\_setting', 'media\_type'] & ['audiobook\_name'] & 0 \\
+please resume my audiobook & pause the book & 6 & ['player\_setting', 'media\_type'] & ['player\_setting'] & 1 \\
+please resume my audiobook & what lists are in my notebook & 7 & ['player\_setting', 'media\_type'] & [] & 0 \\
+please resume my audiobook & pause the book & 8 & ['player\_setting', 'media\_type'] & ['player\_setting'] & 1 \\
+please resume my audiobook & pause the book & 9 & ['player\_setting', 'media\_type'] & ['player\_setting'] & 1 \\
+please resume my audiobook & please resume my audiobook & 10 & ['player\_setting', 'media\_type'] & ['player\_setting', 'media\_type'] & 2 \\
+please resume my audiobook & post this video to facebook & 11 & ['player\_setting', 'media\_type'] & ['media\_type'] & 1 \\
+please resume my audiobook & pause the book & 12 & ['player\_setting', 'media\_type'] & ['player\_setting'] & 1 \\
+please resume my audiobook & is there anything new in my mailbox & 13 & ['player\_setting', 'media\_type'] & [] & 0 \\
+please resume my audiobook & find a taxi to book & 14 & ['player\_setting', 'media\_type'] & ['transport\_type'] & 0 \\
+please resume my audiobook & please resume my audiobook & 15 & ['player\_setting', 'media\_type'] & ['player\_setting', 'media\_type'] & 2 \\
+\bottomrule
+\end{longtable}
+}
+\vspace{0.1cm}
+{\footnotesize\noindent\raggedright \textbf{Note on Headings (Part 8):} \textbf{Q. / N. Entities}: Labeled argument slots or specific variable text items parsed out from the sentence (e.g., \textit{[date]}, \textit{[time]}); \textbf{Ent. Ov.}: Entity Overlap (The simple count of how many extracted entities match exactly between the query and its neighbor).\par}

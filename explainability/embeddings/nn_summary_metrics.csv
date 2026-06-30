@@ -1,0 +1,112 @@
+,intent,scenario,action,ansid,speaker,entity_overlap,word_overlap,phoneme_similarity
+1,0.7693757065695265,0.8212536113553573,0.7987689988694887,0.5779424695390026,0.40748649667127246,"query_cut
+audio--1504190166-5347            1.0
+audio--1504190166-headset-5346    1.0
+audio--1504190258-5589            2.0
+audio--1504190258-headset-5588    2.0
+audio--1504190270-5000            2.0
+                                 ... 
+audio-1502896975-headset-17       0.0
+audio-1502896988-7778             0.0
+audio-1502896988-headset-7777     1.0
+audio-1502897050-3322             2.0
+audio-1502897050-headset-3321     2.0
+Name: entity_overlap, Length: 7961, dtype: float64","query_cut
+audio--1504190166-5347            0.500000
+audio--1504190166-headset-5346    0.461538
+audio--1504190258-5589            1.000000
+audio--1504190258-headset-5588    1.000000
+audio--1504190270-5000            1.000000
+                                    ...   
+audio-1502896975-headset-17       0.000000
+audio-1502896988-7778             0.142857
+audio-1502896988-headset-7777     0.500000
+audio-1502897050-3322             1.000000
+audio-1502897050-headset-3321     1.000000
+Name: word_overlap, Length: 7961, dtype: float64","query_cut
+audio--1504190166-5347            0.0
+audio--1504190166-headset-5346    0.0
+audio--1504190258-5589            0.0
+audio--1504190258-headset-5588    0.0
+audio--1504190270-5000            0.0
+                                 ... 
+audio-1502896975-headset-17       0.0
+audio-1502896988-7778             0.0
+audio-1502896988-headset-7777     0.0
+audio-1502897050-3322             0.0
+audio-1502897050-headset-3321     0.0
+Name: phoneme_similarity, Length: 7961, dtype: float64"
+5,0.8897123476950132,0.9276472804924004,0.917347066951388,0.7264162793618892,0.5959050370556462,"query_cut
+audio--1504190166-5347            1.0
+audio--1504190166-headset-5346    1.0
+audio--1504190258-5589            1.2
+audio--1504190258-headset-5588    1.2
+audio--1504190270-5000            1.2
+                                 ... 
+audio-1502896975-headset-17       0.0
+audio-1502896988-7778             0.2
+audio-1502896988-headset-7777     0.4
+audio-1502897050-3322             0.4
+audio-1502897050-headset-3321     0.4
+Name: entity_overlap, Length: 7961, dtype: float64","query_cut
+audio--1504190166-5347            0.545641
+audio--1504190166-headset-5346    0.476410
+audio--1504190258-5589            0.328205
+audio--1504190258-headset-5588    0.328205
+audio--1504190270-5000            0.650000
+                                    ...   
+audio-1502896975-headset-17       0.233333
+audio-1502896988-7778             0.417143
+audio-1502896988-headset-7777     0.513333
+audio-1502897050-3322             0.245752
+audio-1502897050-headset-3321     0.232620
+Name: word_overlap, Length: 7961, dtype: float64","query_cut
+audio--1504190166-5347            0.0
+audio--1504190166-headset-5346    0.0
+audio--1504190258-5589            0.0
+audio--1504190258-headset-5588    0.0
+audio--1504190270-5000            0.0
+                                 ... 
+audio-1502896975-headset-17       0.0
+audio-1502896988-7778             0.0
+audio-1502896988-headset-7777     0.0
+audio-1502897050-3322             0.0
+audio-1502897050-headset-3321     0.0
+Name: phoneme_similarity, Length: 7961, dtype: float64"
+15,0.9448561738475066,0.9683456852154252,0.9603064941590252,0.7997738977515387,0.7071975882426831,"query_cut
+audio--1504190166-5347            1.000000
+audio--1504190166-headset-5346    1.000000
+audio--1504190258-5589            1.200000
+audio--1504190258-headset-5588    1.200000
+audio--1504190270-5000            1.133333
+                                    ...   
+audio-1502896975-headset-17       0.000000
+audio-1502896988-7778             0.133333
+audio-1502896988-headset-7777     0.133333
+audio-1502897050-3322             0.200000
+audio-1502897050-headset-3321     0.266667
+Name: entity_overlap, Length: 7961, dtype: float64","query_cut
+audio--1504190166-5347            0.473318
+audio--1504190166-headset-5346    0.437420
+audio--1504190258-5589            0.232158
+audio--1504190258-headset-5588    0.232158
+audio--1504190270-5000            0.537593
+                                    ...   
+audio-1502896975-headset-17       0.233016
+audio-1502896988-7778             0.316508
+audio-1502896988-headset-7777     0.319206
+audio-1502897050-3322             0.098553
+audio-1502897050-headset-3321     0.094811
+Name: word_overlap, Length: 7961, dtype: float64","query_cut
+audio--1504190166-5347            0.0
+audio--1504190166-headset-5346    0.0
+audio--1504190258-5589            0.0
+audio--1504190258-headset-5588    0.0
+audio--1504190270-5000            0.0
+                                 ... 
+audio-1502896975-headset-17       0.0
+audio-1502896988-7778             0.0
+audio-1502896988-headset-7777     0.0
+audio-1502897050-3322             0.0
+audio-1502897050-headset-3321     0.0
+Name: phoneme_similarity, Length: 7961, dtype: float64"
