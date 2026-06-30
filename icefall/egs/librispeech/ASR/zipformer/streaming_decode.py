@@ -45,19 +45,19 @@ import k2
 import numpy as np
 import sentencepiece as spm
 import torch
-# from asr_datamodule import LibriSpeechAsrDataModule
-from asr_datamodule_slurp import SlurpAsrDataModule
-from decode_stream import DecodeStream
+from asr_datamodule import LibriSpeechAsrDataModule
+# from .asr_datamodule_slurp import SlurpAsrDataModule
+from .decode_stream import DecodeStream
 from kaldifeat import Fbank, FbankOptions
 from lhotse import CutSet
-from streaming_beam_search import (
+from .streaming_beam_search import (
     fast_beam_search_one_best,
     greedy_search,
     modified_beam_search,
 )
 from torch import Tensor, nn
 from torch.nn.utils.rnn import pad_sequence
-from train import add_model_arguments, get_model, get_params
+from .train import add_model_arguments, get_model, get_params
 
 from icefall.checkpoint import (
     average_checkpoints,
@@ -476,7 +476,7 @@ def decode_one_chunk(
 
     states = stack_states(states)
 
-    encoder_out, encoder_out_lens, new_states = streaming_forward(
+    raw_encoder_out, encoder_out_lens, new_states = streaming_forward(
         features=features,
         feature_lens=feature_lens,
         model=model,
@@ -485,7 +485,7 @@ def decode_one_chunk(
         left_context_len=left_context_len,
     )
 
-    encoder_out = model.joiner.encoder_proj(encoder_out)
+    encoder_out = model.joiner.encoder_proj(raw_encoder_out)
 
     if params.decoding_method == "greedy_search":
         greedy_search(model=model, encoder_out=encoder_out, streams=decode_streams)
@@ -520,7 +520,7 @@ def decode_one_chunk(
         if decode_streams[i].done:
             finished_streams.append(i)
 
-    return finished_streams
+    return finished_streams, raw_encoder_out
 
 
 def decode_dataset(

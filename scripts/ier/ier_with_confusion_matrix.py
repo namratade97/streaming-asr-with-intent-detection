@@ -64,7 +64,6 @@ def print_binary_confusion_matrix(samples, intent):
 
 
 
-# ANSI escape sequences for coloring text
 def color_text(text, color):
     colors = {
         'red': '\033[91m',

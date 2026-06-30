@@ -66,7 +66,7 @@ spec:
           mountPath: /workspace/icefall/data
           subPath: data
         - name: nfs-workspace-rw
-          mountPath: /workspace/icefall/zipformer/exp-causal-context8 #│ 2024-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+          mountPath: /workspace/icefall/zipformer/exp-causal-context8 #│ INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
           subPath: models_streaming/zipformer/v402_streaming_context8 #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
           readOnly: false
         - name: dshm

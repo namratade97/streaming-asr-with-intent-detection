@@ -124,7 +124,7 @@ spec:
         #   subPath: data
 
         - name: nfs-workspace-rw
-          mountPath: /workspace/icefall/zipformer/exp-causal-slurp-encintent-base-multi-libri100slurp-10-110avg7 #exp-causal-slurp-v-new17-lcs512 #│ 2024-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+          mountPath: /workspace/icefall/zipformer/exp-causal-slurp-encintent-base-multi-libri100slurp-10-110avg7 #exp-causal-slurp-v-new17-lcs512 #│  INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
           # subPath: models_streaming_slurp_new6/zipformer/run_new17_encintent_NORMAL_FOCALLOSS #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
           # subPath: models_streaming_slurp_new6/zipformer/run_new17_encintent_baselibri100slurp-conv-500
           subPath: models_streaming_slurp_new6/zipformer/run_new17_encintent_basemultislurp-intentfinetune-110_avg7_corr

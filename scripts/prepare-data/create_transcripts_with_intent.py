@@ -10,11 +10,9 @@ with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
         sentence = data["sentence"]
         intent = data["intent"]
         
-        # Combine sentence and intent with the custom token format
+        # Combine sentence and intent
         formatted_sentence = f"{sentence.upper()} <{intent}>"
         
-        # Write the formatted sentence to the output file
         outfile.write(formatted_sentence + '\n')
 
 print(f"Transcripts have been saved to {output_file}")
-#python3 create_transcripts_with_intent.py 

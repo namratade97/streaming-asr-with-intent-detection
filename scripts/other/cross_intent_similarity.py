@@ -125,7 +125,7 @@ def main():
         print("Computing edit-distance similarities...")
         sim_matrix = compute_edit_distances(sentences)
 
-    # Top-5 closest (optional)
+    # Top-5 closest
     for i, rec in enumerate(records):
         scores = sim_matrix[i].copy()
         scores[i] = -np.inf if args.metric in ["tfidf", "semantic"] else -1

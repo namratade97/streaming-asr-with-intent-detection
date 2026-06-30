@@ -122,7 +122,7 @@ spec:
         #   subPath: feats/polaris-majid-feat-common-voice
 
         - name: nfs-workspace-rw
-          mountPath: /workspace/icefall/zipformer/exp-causal-base-lib960-slurp-incparam-asr #│ 2024-08-27 20:59:05,560 INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
+          mountPath: /workspace/icefall/zipformer/exp-causal-base-lib960-slurp-incparam-asr #│  INFO [checkpoint.py:75] Saving checkpoint to zipformer/exp-causal/epoch-40.pt                                                        
           subPath: models_streaming/zipformer/v402_streaming_base-libri-960-slurp-inc-param #in the volume /whatever/models/zipformer/v0, saving the trained model from /workspace/icefall/egs/librispeech/ASR/zipformer/exp in pod while training to here
           readOnly: false
         - name: dshm

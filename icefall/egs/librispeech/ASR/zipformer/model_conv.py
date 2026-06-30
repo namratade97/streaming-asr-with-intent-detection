@@ -1,20 +1,4 @@
-# Copyright    2021-2023  Xiaomi Corp.        (authors: Fangjun Kuang,
-#                                                       Wei Kang,
-#                                                       Zengwei Yao)
-#
-# See ../../../../LICENSE for clarification regarding multiple authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# updated for adding causal conv1d layer
 
 from typing import Optional, Tuple
 
@@ -31,66 +15,6 @@ import logging
 import re
 # from causal_conv1d.causal_conv1d import causal_conv1d_fn
 
-
-
-# class FocalLoss(nn.Module):
-#     def __init__(self, gamma: float = 2.0, alpha: Optional[torch.Tensor] = None, reduction: str = "mean"):
-#         """
-#         gamma: focusing parameter
-#         alpha: tensor of shape (num_classes,) containing class weights
-#         reduction: 'mean', 'sum', or 'none'
-#         """
-#         super().__init__()
-#         self.gamma = gamma
-#         self.alpha = alpha  # pass class_weights here
-#         self.reduction = reduction
-
-#     def forward(self, logits: torch.Tensor, targets: torch.Tensor, mask: Optional[torch.Tensor] = None):
-#         """
-#         logits: (batch, num_classes) raw scores
-#         targets: (batch,) class indices
-#         mask: optional (batch,) boolean to ignore padded frames if using pooled logits
-#         """
-#         ce_loss = F.cross_entropy(logits, targets, weight=self.alpha, reduction="none")  # (batch,)
-#         pt = torch.exp(-ce_loss)  # probability of true class
-#         focal_loss = ((1 - pt) ** self.gamma) * ce_loss  # (batch,)
-
-#         if mask is not None:
-#             focal_loss = focal_loss * mask.float()  # ignore masked positions
-#             denom = mask.float().sum().clamp(min=1.0)
-#         else:
-#             denom = logits.shape[0]
-
-#         if self.reduction == "mean":
-#             return focal_loss.sum() / denom
-#         elif self.reduction == "sum":
-#             return focal_loss.sum()
-#         else:
-#             return focal_loss
-
-# class CausalConv1d(nn.Module):
-#     def __init__(self, dim: int, width: int, activation: str = None):
-#         super().__init__()
-
-#         dim = 512 #128
-#         kernel_size = 4 
-
-
-#         # self.weight = nn.Parameter(torch.empty(dim, width))
-#         self.weight = nn.Parameter(torch.empty(dim, kernel_size))
-#         nn.init.xavier_uniform_(self.weight)
-#         self.bias = nn.Parameter(torch.zeros(dim))
-#         self.width = width
-#         self.activation = activation
-
-#     def forward(self, x: torch.Tensor) -> torch.Tensor:
-#         # x: (batch, dim, seqlen)
-#         return causal_conv1d_fn(
-#             x,
-#             self.weight,
-#             self.bias,
-#             activation=self.activation,
-#         )
 
 class Permute(nn.Module):
     def __init__(self, *dims):
@@ -371,21 +295,7 @@ class AsrModel(nn.Module):
                 nn.LogSoftmax(dim=-1),
             )
 
-        ############################intent#####################################
-        # layer focusing on intent classification
-        # self.intent_classifier = nn.Sequential(
-        #         nn.Linear(encoder_dim, 92),
-        #     )
         
-        # self.intent_classifier = nn.Sequential(
-        #         nn.Linear(encoder_dim, 128), # 256/512
-        #         nn.ReLU(), 
-        #         #add conv1d (causal) (kernel 4/8/../20),
-        #         # relu
-        #         nn.Linear(128, 92)
-        #         # more linear layer
-        #     )
-
         self.intent_classifier = nn.Sequential(
                 nn.Linear(encoder_dim, 512),
                 nn.ReLU(),
@@ -397,13 +307,7 @@ class AsrModel(nn.Module):
                 nn.Linear(128, 92)
             )
 
-        ############################intent#####################################
-
-        # if class_weights is not None:
-        #     self.focal_loss = FocalLoss(gamma=2.0, alpha=class_weights)
-        # else:
-        #     self.focal_loss = None
-
+        
 
     @torch.no_grad()
     def infer_intent_logits(
@@ -451,9 +355,7 @@ class AsrModel(nn.Module):
           encoder_out_lens:
             Encoder output lengths, of shape (N,).
         """
-        # logging.info(f"Memory allocated at entry: {torch.cuda.memory_allocated() // 1000000}M")
         x, x_lens = self.encoder_embed(x, x_lens)
-        # logging.info(f"Memory allocated after encoder_embed: {torch.cuda.memory_allocated() // 1000000}M")
 
         src_key_padding_mask = make_pad_mask(x_lens)
         x = x.permute(1, 0, 2)  # (N, T, C) -> (T, N, C)
@@ -461,12 +363,7 @@ class AsrModel(nn.Module):
         encoder_out, encoder_out_lens = self.encoder(x, x_lens, src_key_padding_mask)
         encoder_out = encoder_out.permute(1, 0, 2)  # (T, N, C) ->(N, T, C)
 
-        ############################intent#####################################
-        # map the tokens to indices some_mapping
-        # add masking
-        # masking intent_logits*mask
-        # sum/sum of masks
-
+        
 
         # intent_tokens = [extract_intent_from_supervision(text) for text in supervision_texts]
         intent_tokens = [extract_intent_from_supervision(text) or "▁<unk>" for text in supervision_texts]
@@ -582,8 +479,8 @@ class AsrModel(nn.Module):
         boundary[:, 2] = y_lens
         boundary[:, 3] = encoder_out_lens
 
-        lm = self.simple_lm_proj(decoder_out)
-        am = self.simple_am_proj(encoder_out)
+        # lm = self.simple_lm_proj(decoder_out)
+        # am = self.simple_am_proj(encoder_out)
 
         # if self.training and random.random() < 0.25:
         #    lm = penalize_abs_values_gt(lm, 100.0, 1.0e-04)
@@ -621,8 +518,6 @@ class AsrModel(nn.Module):
 
         # logits : [B, T, prune_range, vocab_size]
 
-        # project_input=False since we applied the decoder's input projections
-        # prior to do_rnnt_pruning (this is an optimization for speed).
         logits = self.joiner(am_pruned, lm_pruned, project_input=False)
 
         with torch.amp.autocast("cuda",enabled=False):
@@ -676,26 +571,7 @@ class AsrModel(nn.Module):
               lm_scale * lm_probs + am_scale * am_probs +
               (1-lm_scale-am_scale) * combined_probs
         """
-        # print(f"x shape: {x.shape}")        
-        # # Should be 
-        # # [Batch size (number of sequences/utterances), 
-        # # Number of time frames (sequence length for each utterance after padding), 
-        # # Feature dimension (number of features per frame, such as MFCCs or Mel-spectrogram features)]
-        # print(f"x_lens shape: {x_lens.shape}")  
-        # # Should be 1-dimensional tensor of shape (N,), where each element contains the number of valid frames in the corresponding utterance in x
-        # print(f"Batch size (dim0): {y.dim0}")  # Number of sequences (utterances)
-        # print(f"Total number of labels (tot_size(1)): {y.tot_size(1)}")  # Total labels
-        # print(f"Row splits: {y.shape.row_splits(1)}")  # Row splits for each utterance
-
-        # # To get the length of each sequence (number of labels per sequence)
-        # row_splits = y.shape.row_splits(1)
-        # sequence_lengths = row_splits[1:] - row_splits[:-1]
-        # print(f"Lengths of sequences: {sequence_lengths}")
-
-        # y is a ragged tensor (from the k2 library) with two axes. Its shape is [utt][label], where:
-        # utt: The batch axis (number of utterances).
-        # label: The sequence of target labels for each utterance (could be phonemes, characters, or subword units).
-        # This means y can hold target sequences of variable lengths (e.g., the number of words or characters in each utterance might vary).
+        
         print(f"#################################################################")  
 
         assert x.ndim == 3, x.shape

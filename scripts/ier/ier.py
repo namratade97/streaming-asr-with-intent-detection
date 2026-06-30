@@ -3,7 +3,6 @@ import sys
 import argparse
 from collections import defaultdict, Counter
 
-# ANSI escape sequences for coloring text
 def color_text(text, color):
     colors = {
         'red': '\033[91m',

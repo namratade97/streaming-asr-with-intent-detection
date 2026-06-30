@@ -1,18 +1,4 @@
-# Copyright    2022  Xiaomi Corp.        (authors: Wei Kang)
-#
-# See ../../../../LICENSE for clarification regarding multiple authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# updated to stop the decoder from generating intent tokens
 
 import warnings
 from typing import List
@@ -35,13 +21,11 @@ def build_banned_id_set(spm_processor):
         piece = spm_processor.id_to_piece(idx)
         if "<" in piece or ">" in piece:
             banned.add(idx)
-    # # keep the blank, unk etc.:
     # banned.discard(spm_processor.piece_to_id("<blk>"))
     # banned.discard(spm_processor.piece_to_id("<unk>"))
     # banned.discard(spm_processor.piece_to_id("<s>"))
     # banned.discard(spm_processor.piece_to_id("</s>"))
 
-    # discard only if they actually exist
     for tok in ["<blk>", "<unk>", "<s>", "</s>", "<sos/eos>"]:
         tok_id = spm_processor.piece_to_id(tok)
         if 0 <= tok_id < 500:
@@ -153,7 +137,7 @@ def modified_beam_search(
 
     for t in range(T):
         current_encoder_out = encoder_out[:, t].unsqueeze(1).unsqueeze(1)
-        # current_encoder_out's shape: (batch_size, 1, 1, encoder_out_dim)
+        # (batch_size, 1, 1, encoder_out_dim)
 
         hyps_shape = get_hyps_shape(B).to(device)
 
@@ -228,11 +212,10 @@ def modified_beam_search(
                 if new_token != blank_id:
                     new_ys.append(new_token)
 
-                    # ---- time alignment --------------------------------
-                    abs_t = streams[i].done_frames + t   # ‘t’ is the frame index in this chunk
+                    #  time alignment 
+                    abs_t = streams[i].done_frames + t   
                     streams[i].token_times.append(abs_t) # store once per emitted piece
                     streams[i].token_syms.append(new_token)
-                    # -----------------------------------------------------
                     
                 new_log_prob = topk_log_probs[k]
                 new_hyp = Hypothesis(ys=new_ys, log_prob=new_log_prob)

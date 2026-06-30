@@ -9,10 +9,10 @@ spec:
       command: ["tail", "-f", "/dev/null"]
       volumeMounts:
         - name: nde-icefall-volume
-          mountPath: /workspace/icefall/download  # Mount your download folder
+          mountPath: /workspace/icefall/download
           subPath: download
         - name: nde-icefall-volume
-          mountPath: /workspace/icefall/data       # Mount your data folder
+          mountPath: /workspace/icefall/data
           subPath: data
   volumes:
     - name: nde-icefall-volume

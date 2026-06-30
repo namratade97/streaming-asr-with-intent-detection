@@ -21,6 +21,5 @@ def lowercase_supervisions(base_dir):
         print(f"Done: {file_path}")
 
 if __name__ == "__main__":
-    # Update this path if needed
     base_folder = "/mnt/gpu-phx/am-team/workspaces/nde/organized_slurp_data_pods_lowercase_without_intent"
     lowercase_supervisions(base_folder)

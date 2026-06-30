@@ -97,10 +97,9 @@ def calculate_ier(file_path, exclude_intents=None):
             # if not line:
             #     continue
 
-            # ── NEW: skip comment / XAI lines ─────────────────────────
+            # skip comment / XAI lines
             if not line or line.startswith('#'):
                 continue
-            # ----------------------------------------------------------
 
             m = id_pattern.match(line)
             if not m:
@@ -213,7 +212,7 @@ def main():
     print()
     print(color_text("Breakdown of wrong predictions for top 10 most erroneous intents:", "bold"))
 
-    # ── Confusion Matrix for Top Intents ───────────────────────────
+    # Confusion Matrix for Top Intents 
 
     print("Sklearn matrix")
     print_overall_metrics(samples)
@@ -245,7 +244,7 @@ def main():
             cell = color_text("{:>20}".format(count), "red") if ref != hyp else color_text("{:>20}".format(count), "green")
             row.append(cell)
         print("".join(row))
-    # ── Confusion Matrix for Top Intents ───────────────────────────
+    # Confusion Matrix for Top Intents 
 
 
 

@@ -12,11 +12,9 @@ def process_file(filename):
                 key, label, content = match.groups()
                 words = content.split(', ')
                 
-                # Remove quotes and strip unwanted tokens
                 words = [w.strip("'") for w in words if not re.match(r'<.*?>', w)]
                 sentence = ' '.join(words)
                 
-                # Remove intent markers at the end of ref sentences
                 sentence = re.sub(r' <.*?>$', '', sentence)
                 
                 if label == 'ref':

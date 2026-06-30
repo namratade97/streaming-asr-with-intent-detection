@@ -1,7 +1,6 @@
 import json
 import os
 
-# Paths to your data
 input_jsonl_path = '/disk1/polaris_intent_detection/slurp/dataset/slurp/train.jsonl'
 output_dir = '/disk1/polaris_intent_detection/Prepare_SLURP/data/manifests'
 supervision_file_path = os.path.join(output_dir, 'supervisions.jsonl')
@@ -19,14 +18,12 @@ def create_supervision_manifest(input_jsonl_path, supervision_file_path):
             if not recording_id or not transcript or not intent:
                 continue
             
-            # Process each recording
             recordings = entry.get('recordings', [])
             for recording in recordings:
                 file_name = recording.get('file', '')
                 if not file_name:
                     continue
                 
-                # Create a supervision entry with intent
                 supervision_entry = {
                     'id': f'{recording_id}_{file_name}',
                     'recording_id': recording_id,

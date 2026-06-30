@@ -1,2 +1,0 @@
-settings	WER
-num_active_paths_4	49.52

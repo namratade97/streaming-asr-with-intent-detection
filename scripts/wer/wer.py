@@ -44,7 +44,6 @@ def parse_input_file(file_path):
             print(f"[Line {i+2}] Failed to parse hyp: {hyp_match.group(1)!r} Error: {e}")
             continue
 
-        # remove <intent> tokens or any token like ▁<...>
         ref = [w.strip() for w in ref if not re.match(r"^▁?<.*>$", w)]
         hyp = [w.strip() for w in hyp if not re.match(r"^▁?<.*>$", w)]
 
@@ -63,7 +62,6 @@ def calculate_wer(ref, hyp):
     n = len(ref)
     m = len(hyp)
     
-    # initialize DP table
     dp = [[0] * (m + 1) for _ in range(n + 1)]
 
     for i in range(n + 1):
@@ -147,7 +145,6 @@ def process_file_and_calculate_wer(file_path, show_full=False):
             print(f"Ref: {ref}")
             print(f"Hyp: {hyp}\n")
     else:
-        # just show one example
         ref, hyp = max_wer_examples[0]
         print("\nExample with highest WER:")
         print(f"Ref: {ref}")

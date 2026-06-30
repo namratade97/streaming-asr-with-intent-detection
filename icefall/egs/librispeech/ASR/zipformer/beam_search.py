@@ -25,7 +25,17 @@ import sentencepiece as spm
 import torch
 from torch import nn
 
-from icefall import ContextGraph, ContextState, NgramLm, NgramLmStateCost
+# from icefall import ContextGraph, ContextState, NgramLm, NgramLmStateCost
+from icefall.context_graph import (
+    ContextGraph,
+    ContextState
+)
+
+from icefall.ngram_lm import (
+  
+    NgramLm,
+    NgramLmStateCost,
+)
 from icefall.decode import Nbest, one_best_decoding
 from icefall.lm_wrapper import LmScorer
 from icefall.rnn_lm.model import RnnLmModel

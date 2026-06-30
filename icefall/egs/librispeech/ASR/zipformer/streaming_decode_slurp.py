@@ -1,21 +1,4 @@
-#!/usr/bin/env python3
-# Copyright 2022-2023 Xiaomi Corporation (Authors: Wei Kang,
-#                                                  Fangjun Kuang,
-#                                                  Zengwei Yao)
-#
-# See ../../../../LICENSE for clarification regarding multiple authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# updated to add intent detection and frame‑wise relevance scoring
 
 """
 Usage:
@@ -46,18 +29,18 @@ import numpy as np
 import sentencepiece as spm
 import torch
 # from asr_datamodule import LibriSpeechAsrDataModule
-from asr_datamodule_slurp import SlurpAsrDataModule #####
-from decode_stream import DecodeStream
+from .asr_datamodule_slurp import SlurpAsrDataModule #####
+from .decode_stream import DecodeStream
 from kaldifeat import Fbank, FbankOptions
 from lhotse import CutSet
-from streaming_beam_search import (
+from .streaming_beam_search import (
     fast_beam_search_one_best,
     greedy_search,
     modified_beam_search,
 )
 from torch import Tensor, nn
 from torch.nn.utils.rnn import pad_sequence
-from train import add_model_arguments, get_model, get_params
+from .train import add_model_arguments, get_model, get_params
 
 from icefall.checkpoint import (
     average_checkpoints,
@@ -78,13 +61,13 @@ LOG_EPS = math.log(1e-10)
 import os
 print("Current Working Directory:", os.getcwd())
 
-from model import some_mapping
+from .model import some_mapping
 intent_id2label = { v: k for k, v in some_mapping.items() }
 
 from collections import defaultdict
 import csv
 
-# ---------- relevance helper functions--------------------------------
+#  relevance helper functions
 def token_relevance(frame_scores, hyp_tokens):
     """
     frame_scores : 1D tensor of length F  (relevance per encoder frame)
@@ -97,12 +80,12 @@ def token_relevance(frame_scores, hyp_tokens):
     if n == 0:
         return []
 
-    frames_per_tok = F / n  # **evenly** divide the F frames into n buckets
+    frames_per_tok = F / n  # evenly divide the F frames into n buckets
     tok_scores = []
     for j, tok in enumerate(hyp_tokens):
         s = int(round(j * frames_per_tok)) # start frame index (inclusive)
-        e = int(round((j + 1) * frames_per_tok)) # end   frame index (exclusive)
-        tok_scores.append(frame_scores[s:e].sum().item()) #   sum of relevance over the slice that we assigned to this token
+        e = int(round((j + 1) * frames_per_tok)) # end frame index (exclusive)
+        tok_scores.append(frame_scores[s:e].sum().item()) # sum of relevance over the slice that we assigned to this token
 
     tot = sum(tok_scores) + 1e-8 # avoid dividing by zero
     tok_scores = [x / tot for x in tok_scores]
@@ -112,7 +95,6 @@ def token_relevance(frame_scores, hyp_tokens):
         key=lambda x: x[1], reverse=True
     )[:3]
     return top3
-# ------------------------------------------------------------- #####
 
 def token_relevance_with_times(frame_scores, hyp_tokens, token_times):
     from collections import defaultdict
@@ -148,9 +130,7 @@ def token_relevance_with_times(frame_scores, hyp_tokens, token_times):
     return top3
 
 
-#####################
 
-# ---------- helper -----------------
 def classifier_weight(cls):
     """
     Return the weight matrix (C × I) of the final linear layer that maps
@@ -159,9 +139,7 @@ def classifier_weight(cls):
     """
     if isinstance(cls, torch.nn.Linear):
         return cls.weight
-    # assume the last module is the linear projection
     return next(m.weight for m in reversed(cls) if isinstance(m, torch.nn.Linear))
-# ----------------------------------------------------------------
 
 def get_parser():
     parser = argparse.ArgumentParser(
@@ -538,6 +516,7 @@ def decode_one_chunk(
     states = []
     processed_lens = []  # Used in fast-beam-search
 
+    print("Chunk size:", chunk_size)
     for stream in decode_streams:
         feat, feat_len = stream.get_feature_frames(chunk_size * 2)
         features.append(feat)
@@ -599,32 +578,13 @@ def decode_one_chunk(
     for i, stream in enumerate(decode_streams):
         stream.intent_logit_sum += chunk_sum[i]
         stream.total_frames      += encoder_out_lens[i]
-        # ---- record running intent confidence per frame ----
+        # record running intent confidence per frame
         mean_logits = stream.intent_logit_sum / stream.total_frames
         probs       = torch.softmax(mean_logits, dim=-1).cpu().tolist()
         frame_idx   = stream.total_frames  # absolute encoder‑frame count so far
         stream.intent_history.append((frame_idx, probs))
     ################################################################
-    # keep full frame × intent relevance for later XAI 
-    # weight_t = classifier_weight(model.intent_classifier).T
-
-    # Project encoder outputs first
-    # projected = model.intent_classifier[0](raw_encoder_out)  # (N, T, 128)
-    # projected = model.intent_classifier[1](projected)        # ReLU  
     
-    # weight_t = model.intent_classifier[2].weight.T ###NEW
-    # weight_t = model.intent_classifier[1].weight.T ###NEW  # (128, 92)
-
-    # frame_rels = torch.einsum(
-    #     "ntc,ci->nti",                # (N,T,C)·(C,I) → (N,T,I)
-    #     raw_encoder_out,              # encoder frames # (N, T, C)
-    #     weight_t                      # (C, N_intents)
-    # )                                 # (N,T,92)
-
-    # proj = model.intent_classifier[0](raw_encoder_out)  # (N,T,128) ### when using bigger MLP Head
-    # proj = model.intent_classifier[1](proj)             # ReLU
-    # weight_t = model.intent_classifier[2].weight.T      # (128, 92)
-
     # 1) First projection
     proj = model.intent_classifier[0](raw_encoder_out)   # Linear(encoder_dim → 1024)
     proj = model.intent_classifier[1](proj)              
@@ -647,7 +607,7 @@ def decode_one_chunk(
 
     # proj = model.intent_classifier[13](proj)
 
-    # Grab final classification weight
+    # final classification weight
     weight_t = model.intent_classifier[9].weight.T      # Linear(128→92)
 
     # Apply classifier manually
@@ -696,14 +656,14 @@ def decode_one_chunk(
         # decode_streams[i].states = states[i]
         # decode_streams[i].done_frames += encoder_out_lens[i]
 
-        stream = decode_streams[i] #--------------------
-        stream.states = states[i] #--------------------
-        stream.done_frames += encoder_out_lens[i] #--------------------
+        stream = decode_streams[i] #
+        stream.states = states[i] #
+        stream.done_frames += encoder_out_lens[i] #
 
         if stream.done:
             finished_streams.append(i)
 
-            # ----- intent post‑processing --------------------
+            #  intent post‑processing 
             mean_logits = stream.intent_logit_sum / stream.total_frames
             probs       = torch.softmax(mean_logits, dim=-1)
 
@@ -713,14 +673,13 @@ def decode_one_chunk(
             stream.intent_top3        = list(
                 zip(top3_ids.tolist(), top3_vals.tolist())
             )
-            # -------------------------------------------------- #####
 
 
 
         # if decode_streams[i].done:
         #     finished_streams.append(i)
 
-    return finished_streams
+    return finished_streams, raw_encoder_out
 
 
 def decode_dataset(
@@ -820,13 +779,13 @@ def decode_dataset(
                     hyp_toks = hyp_text.split() 
                     # hyp_toks = [sp.id_to_piece(i) for i in stream.token_syms]
 
-                    # —— compute final intent from the accumulated logits ——  
+                    # compute final intent from the accumulated logits 
                     mean_logits = stream.intent_logit_sum / stream.total_frames
                     pred_id     = mean_logits.argmax().item()
                     pred_label  = intent_id2label[pred_id]
-                    # ----------------------------------------------------------------
+                    # 
 
-                    # ---------- intent statistics ---------------------------------
+                    #  intent statistics 
                     # (a) confidence = prob of chosen intent (= first of top‑3)
                     pred_id  = stream.intent_top3[0][0]
                     conf     = stream.intent_top3[0][1]
@@ -843,9 +802,7 @@ def decode_dataset(
 
                     # Get concatenated frame-level relevance for the predicted intent (shape: F,)
                     frame_rel = torch.cat(stream.frame_rels, dim=0)[:, pred_id]  # (F,)
-                    # Use the new token times stored during decoding
                     token_times = stream.token_times  # list of frame indices when tokens were emitted
-                    # Call new relevance calculation that uses actual token emission frames
                     tok_rel = token_relevance_with_times(frame_rel, hyp_toks, token_times)  # list of (token, relevance)
 
                     nice_stats = (
@@ -854,7 +811,7 @@ def decode_dataset(
                         f"# Top 3 relevant tokens: " +
                         ", ".join([f"'{w}' {p*100:.1f}%" for w, p in tok_rel])
                     )
-                    # ----------------------------------------------------------------
+                    
 
 
                     decode_results.append(
@@ -894,13 +851,13 @@ def decode_dataset(
                 hyp_toks = hyp_text.split() ##### NEW
                 # hyp_toks = [sp.id_to_piece(i) for i in stream.token_syms]
 
-                # compute final intent from accumulated logits ——  
+                # compute final intent from accumulated logits 
                 mean_logits = stream.intent_logit_sum / stream.total_frames
                 pred_id     = mean_logits.argmax().item()
                 pred_label  = intent_id2label[pred_id]
-                # ----------------------------------------------------------------
+                # 
 
-                # ---------- intent statistics ---------------------------------
+                #  intent statistics
                 # (a) confidence = prob of chosen intent (= first of top‑3)
                 pred_id  = stream.intent_top3[0][0]
                 conf     = stream.intent_top3[0][1]
@@ -915,11 +872,8 @@ def decode_dataset(
                 # frame_rel = torch.cat(stream.frame_rels, dim=0)[:, pred_id]    # (F,)
                 # tok_rel   = token_relevance(frame_rel, hyp_toks)               # list[(tok,p)]
 
-                # Get concatenated frame-level relevance for the predicted intent (shape: F,)
                 frame_rel = torch.cat(stream.frame_rels, dim=0)[:, pred_id]  # (F,)
-                # Use new token times stored during decoding
                 token_times = stream.token_times  # list of frame indices when tokens were emitted
-                # Call new relevance calculation that uses actual token emission frames
                 tok_rel = token_relevance_with_times(frame_rel, hyp_toks, token_times)  # list of (token, relevance)
 
                 nice_stats = (
@@ -928,7 +882,7 @@ def decode_dataset(
                     f"# Top 3 relevant tokens: " +
                     ", ".join([f"'{w}' {p*100:.1f}%" for w, p in tok_rel])
                 )
-                # ----------------------------------------------------------------
+                #
 
                 decode_results.append(
                     (
@@ -975,7 +929,7 @@ def save_results(
     combined_csv = out_dir / f"{test_set_name}-intent-top3-{params.suffix}.csv" #CSV for xai
 
 
-    # 1) Write the combined CSV
+    #  combined CSV
     with open(combined_csv, "w", newline="", encoding="utf-8") as csv_f:
         writer = csv.writer(csv_f)
         writer.writerow([
@@ -1014,7 +968,7 @@ def save_results(
     for key, results in results_dict.items():
 
 
-        # ---------- custom recogs file with xai ----------
+        #  custom recogs file with xai 
         rec_path = params.res_dir / f"recogs-{test_set_name}-{key}-{params.suffix}.txt"
         rec_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -1029,34 +983,6 @@ def save_results(
                 f.write(f"{nice_stats}\n")                 #show the XAI lines
 
         logging.info(f"The transcripts are stored in {rec_path}")
-
-        # recog_path = (
-        #     params.res_dir / f"recogs-{test_set_name}-{key}-{params.suffix}.txt"
-        # )
-
-        # # results = sorted(results)
-        # results = sorted(results, key=lambda x: x[0])
-
-        # # Build list of (utt_id, text) tuples for store_transcripts:
-        # # we join hyp_tokens into a string, then append the intent tag at end
-        # texts_for_store = []
-        # for utt_id, _, hyp, intent in results:
-        #     hyp_str = " ".join(hyp)
-        #     # e.g. store "hypothesis-text \t <intent_tag>"
-        #     texts_for_store.append((utt_id, f"{hyp_str}\t{intent}"))
-
-        # # store_transcripts(filename=recog_path, texts=results)
-        # store_transcripts(filename=recog_path, texts=texts_for_store)
-
-
-        # logging.info(f"The transcripts are stored in {recog_path}")
-
-        # The following prints out WERs, per-word error statistics and aligned
-        # ref/hyp pairs.
-        #  write_error_stats expects (ref_tokens, hyp_tokens) tuples
-        # wer_input = [(ref, hyp + [intent]) for _, ref, hyp, intent in results]
-        
-        # wer_input = [(utt_id, ref, hyp + [intent]) for utt_id, ref, hyp, intent in results]
 
         wer_input = []
         for utt_id, ref, hyp, intent, nice_stats, intent_history in results:

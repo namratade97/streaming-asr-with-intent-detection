@@ -1,6 +1,5 @@
 import sentencepiece as spm
 
-# File paths
 input_file = '/disk1/polaris_intent_detection/Tokenizer_SLURP/train_transcript_words_custom_slurp.txt'
 output_directory = '/disk1/polaris_intent_detection/NEWBATCH_Tokenizer'
 model_prefix = f'{output_directory}/cslurp_with_predefined_intents'
@@ -9,10 +8,8 @@ vocab_size = 592 #2000  librispeech , 2000 + 92 on slurp, test
 character_coverage = 0.9995
 model_type = 'bpe'
 
-# Reading user-defined symbols from file, and ensuring special symbols are not included, having <unk> throws an error, for example
 with open(user_defined_symbols_file, 'r') as file:
     user_defined_symbols = file.read().strip().replace('\n', ',')
-    # Remove any special symbols if present
     user_defined_symbols = ','.join(symbol for symbol in user_defined_symbols.split(',') if symbol not in ['<unk>', '<s>', '</s>', '<pad>'])
 
 # Training the SentencePiece model

@@ -1,0 +1,63 @@
+Fbank files can be downloaded here:
+https://drive.google.com/file/d/1yAy_CkZsBwNjJr6hg2Nlrh_h5y_kBy8W/view?usp=sharing
+
+The general folder structure is:
+|---audio
+|   |
+|   |--test
+|   |  |--audio1.flac
+|   |  |--audio2.flac
+|   |--train
+|   |  |--audio3.flac
+|   |  |--audio4.flac
+|   |--val
+|   |  |--audio5.flac
+|   |  |--audio6.flac
+└── data
+    ├── base_libri_model
+    │   ├── best-valid-loss.pt
+    │   └── checkpoint-500000.pt
+    ├── fbank
+    │   ├── slurp_cuts_test.jsonl
+    │   ├── slurp_cuts_train.jsonl
+    │   ├── slurp_cuts_val.jsonl
+    │   ├── slurp_feats_test
+    │   │   ├── feats-0.lca
+    │   │   ├── feats-1.lca
+    │   │   ├── feats-2.lca
+    │   │   └── feats-3.lca
+    │   ├── slurp_feats_test.lca
+    │   ├── slurp_feats_train
+    │   │   ├── feats-0.lca
+    │   │   ├── feats-1.lca
+    │   │   ├── feats-2.lca
+    │   │   └── feats-3.lca
+    │   ├── slurp_feats_train.lca
+    │   ├── slurp_feats_val
+    │   │   ├── feats-0.lca
+    │   │   ├── feats-1.lca
+    │   │   ├── feats-2.lca
+    │   │   └── feats-3.lca
+    │   └── slurp_feats_val.lca
+    ├── lang_bpe_500
+    │   └── bpe.model
+    ├── lang_bpe_500_multisource
+    │   ├── polaris_bpe500_lower_fixed.txt
+    │   ├── polaris_bpe500_lower.model
+    │   ├── polaris_bpe500_lower.txt
+    │   ├── polaris_bpe500_lower.vocab
+    ├── lang_bpe_592
+    │   ├── libri_intent_592.model
+    │   └── libri_intent_592.txt
+    ├── lang_bpe_592_multisource
+    │   ├── new_polaris_bpe592_lower_retrained.model
+    │   └── new_polaris_bpe592_lower_retrained.vocab
+    ├── libricheck_base_libri_model
+    │   └── best-valid-loss.pt
+    ├── manifests
+        ├── test_recordings.jsonl
+        ├── test_supervisions.jsonl
+        ├── train_recordings.jsonl
+        ├── train_supervisions.jsonl
+        ├── val_recordings.jsonl
+        └── val_supervisions.jsonl

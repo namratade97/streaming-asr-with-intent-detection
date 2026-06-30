@@ -3,10 +3,8 @@ import re
 import shutil
 from pathlib import Path
 
-# Directory to modify (your copied SLURP folder)
 base_dir = Path("/mnt/gpu-phx/am-team/workspaces/nde/organized_slurp_data_pods_uppercase_without_intent/data")
 
-# Regex: strip ONE trailing <intent_tag> at end of string (plus surrounding spaces)
 INTENT_AT_END = re.compile(r"\s*<[^>\s]+>\s*$")
 
 def drop_trailing_intent(text: str) -> str:
@@ -51,7 +49,6 @@ def process_supervisions_file(infile: Path):
     shutil.move(tmpfile, infile)
     print(f"[supervisions] {infile.name}: stripped intent from {removed}/{total} rows")
 
-# --- Run ---
 
 # 1) Cuts (fbank/slurp_cuts_*.jsonl)
 cuts_dir = base_dir / "fbank"

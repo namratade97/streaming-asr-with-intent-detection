@@ -49,14 +49,12 @@ def compare_sentencepiece_models(spm_path_1, spm_path_2, sentence):
 
 
 if __name__ == "__main__":
-    # Example usage: replace with your actual tokenizer paths and sentence
     tokenizer_path_1 = "LIBRI_TRANSCRIPT_lower_592.model" #bad one
     tokenizer_path_2 = "LIBRI_TRANSCRIPT_lower_592_retrained.model" #good one
     sentence = "play a taylor swift song <play_music>"
 
     compare_sentencepiece_models(tokenizer_path_1, tokenizer_path_2, sentence)
 
-    #chcek original one for uppercase data
     print("----------------------------------")
     tokenizer_path_3 = "libri_intent_592.model" #good one uppercase
     sentence_uppercase = "PLAY A TAYLOR SWIFT SONG <play_music>"
@@ -69,7 +67,6 @@ if __name__ == "__main__":
     print(f"Tokenizer 3 tokens ({len(tokens_3)}): {tokens_3}")
     print(f"Tokenizer 3 token IDs: {ids_3}\n")
 
-    #chcek multisource for lowercase data
     print("----------------------------------")
     tokenizer_path_4 = "Multisource_NEW_Tokenizer/new_polaris_bpe592_lower_retrained.model" #good one uppercase
     sentence_4 = "play a taylor swift song <play_music>"

@@ -60,7 +60,8 @@ from shutil import copyfile
 from typing import Any, Dict, Optional, Tuple, Union
 
 import k2
-import optim
+# import optim
+import optim_local as optim
 import sentencepiece as spm
 import torch
 import torch.multiprocessing as mp
@@ -74,7 +75,7 @@ from lhotse.cut import Cut
 from lhotse.dataset.sampling.base import CutSampler
 from lhotse.utils import fix_random_seed
 from model import AsrModel
-from optim import Eden, ScaledAdam
+from optim_local import Eden, ScaledAdam, LRScheduler
 from scaling import ScheduledFloat
 from subsampling import Conv2dSubsampling
 from torch import Tensor
@@ -102,7 +103,7 @@ from icefall.utils import (
     str2bool,
 )
 
-LRSchedulerType = Union[torch.optim.lr_scheduler._LRScheduler, optim.LRScheduler]
+LRSchedulerType = Union[torch.optim.lr_scheduler._LRScheduler, LRScheduler]
 
 
 def get_adjusted_batch_count(params: AttributeDict) -> float:

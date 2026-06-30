@@ -1,23 +1,4 @@
-#!/usr/bin/env python3
-# Copyright    2021-2023  Xiaomi Corp.        (authors: Fangjun Kuang,
-#                                                       Wei Kang,
-#                                                       Mingshuang Luo,
-#                                                       Zengwei Yao,
-#                                                       Daniel Povey)
-#
-# See ../../../../LICENSE for clarification regarding multiple authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+
 """
 Usage:
 
@@ -216,7 +197,7 @@ layers_to_check = [
     'simple_lm_proj.weight',
     'simple_lm_proj.bias',
     
-    # intent head (if you want)
+    # intent head
     # 'intent_classifier.0.weight', etc.
 ]
 
@@ -847,9 +828,9 @@ def get_model(params: AttributeDict) -> nn.Module:
         # class_weights=torch.ones(92),
     )
 
-    # ----------------------------------------
+    
     # Freeze decoder parameters
-    # ----------------------------------------
+    
     if model.decoder is not None:
         for name, param in model.decoder.named_parameters():
             param.requires_grad = False
@@ -857,9 +838,9 @@ def get_model(params: AttributeDict) -> nn.Module:
     else:
         logging.warning("Decoder is None even though we set use_transducer=True !!!")
 
-    # ----------------------------------------
+    
     # Freeze joiner parameters
-    # ----------------------------------------
+    
     if model.joiner is not None:
         for name, param in model.joiner.named_parameters():
             param.requires_grad = False
@@ -1027,24 +1008,6 @@ def compute_loss(
         y = sp.encode(texts, out_type=int)
         y = k2.RaggedTensor(y)
 
-        # Extract intent strings from the raw text
-        # intents = []
-        # for text in texts:
-        #     match = re.search(r"<(.*?)>", text)
-        #     if match:
-        #         intent_str = f"<{match.group(1)}>"
-        #     else:
-        #         intent_str = "<unk>"  # or any default token
-        #     intents.append(intent_str)
-        # # Convert intent strings to token ids using SentencePiece
-        # intent_ids = [sp.encode(intent, out_type=int)[0] for intent in intents]
-        # intent_labels = torch.tensor(intent_ids, device=device)
-
-        # # tokenized texts and their lengths for identifying the intent token position
-        # batch_size = len(texts)
-        # batch_indices = torch.arange(batch_size, device=device)
-        # tokenized_texts = [sp.encode(text, out_type=int) for text in texts]
-        # lengths = torch.tensor([len(seq) for seq in tokenized_texts], device=device)
 
         # modify the model so it returns logits along with losses
         with torch.set_grad_enabled(is_training):
@@ -1348,7 +1311,7 @@ def train_one_epoch(
                 valid_info.write_summary(
                     tb_writer, "train/valid_", params.batch_idx_train
                 )
-            # ——— encoder-only DEV intent-ERR ———
+            # encoder-only DEV intent-ERR
             enc_dev_err = evaluate_encoder_intent_err(model, valid_dl, device=model.device if isinstance(model, DDP) else next(model.parameters()).device)
             logging.info(f"[Epoch {params.cur_epoch}] Encoder-only DEV intent-ERR: {enc_dev_err:.2%}")
             if tb_writer:
@@ -1860,8 +1823,6 @@ def run(rank, world_size, args):
     # class_weights = class_weights / class_weights.mean()
 
     # # Clamp the weights to a reasonable range (e.g., 0.1 to 10.0).
-    # # This is a critical step that prevents both numerical underflow (rounding to zero)
-    # # and excessive values that can cause exploding gradients.
     # class_weights = torch.clamp(class_weights, min=0.1, max=10.0)
         
 

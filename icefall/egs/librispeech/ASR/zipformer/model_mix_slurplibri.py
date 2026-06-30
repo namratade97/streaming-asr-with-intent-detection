@@ -1,20 +1,4 @@
-# Copyright    2021-2023  Xiaomi Corp.        (authors: Fangjun Kuang,
-#                                                       Wei Kang,
-#                                                       Zengwei Yao)
-#
-# See ../../../../LICENSE for clarification regarding multiple authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# updated for adding libri with slurp
 
 from typing import Optional, Tuple
 
@@ -222,12 +206,10 @@ class AsrModel(nn.Module):
                 nn.LogSoftmax(dim=-1),
             )
 
-        ############################intent#####################################
         # layer focusing on intent classification
         self.intent_classifier = nn.Sequential(
                 nn.Linear(encoder_dim, 92),
             )
-        ############################intent#####################################
 
 
     @torch.no_grad()
@@ -276,13 +258,10 @@ class AsrModel(nn.Module):
           encoder_out_lens:
             Encoder output lengths, of shape (N,).
         """
-        # logging.info(f"Memory allocated at entry: {torch.cuda.memory_allocated() // 1000000}M")
         x, x_lens = self.encoder_embed(x, x_lens)
-        # logging.info(f"Memory allocated after encoder_embed: {torch.cuda.memory_allocated() // 1000000}M")
 
         valid = x_lens > 0
         if not valid.any():
-            # Return dummy values or skip batch entirely
             return None, None, torch.tensor(0.0, device=x.device)
 
         # Filter tensors
@@ -297,12 +276,7 @@ class AsrModel(nn.Module):
         encoder_out, encoder_out_lens = self.encoder(x, x_lens, src_key_padding_mask)
         encoder_out = encoder_out.permute(1, 0, 2)  # (T, N, C) ->(N, T, C)
 
-        ############################intent#####################################
-        # map the tokens to indices some_mapping
-        # add masking
-        # masking intent_logits*mask
-        # sum/sum of masks
-
+        
         intent_logits = self.intent_classifier(encoder_out) # (N, T, 92)
 
 
@@ -340,12 +314,12 @@ class AsrModel(nn.Module):
 
 
 
-        # 8) compute per‐example NLL; clamp labels so loss(...) doesn’t error on −1
+        # 8) clamp labels so loss(...) doesn’t error on −1
         logp = F.log_softmax(mean_intent_logits, dim=1)  # (N, 92)
         losses = F.nll_loss(
             logp,
             intent_labels.clamp(min=0),
-            reduction="none"    # still (N,)
+            reduction="none"    
         )
         # zero out the “no intent” positions
         losses = losses.masked_fill(intent_labels == -1, 0.0)  # (N,)

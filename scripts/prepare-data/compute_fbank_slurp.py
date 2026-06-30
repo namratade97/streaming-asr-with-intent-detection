@@ -1,20 +1,4 @@
-#!/usr/bin/env python3
-# Copyright    2021  Xiaomi Corp.        (authors: Fangjun Kuang)
-#
-# See ../../../../LICENSE for clarification regarding multiple authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+# Note: following icefall's fbank creation script, but modified to work with SLURP dataset
 
 """
 This file computes fbank features for the SLURP dataset.
@@ -48,31 +32,14 @@ import os
 from contextlib import contextmanager
 
 
-# from icefall.utils import get_executor, str2bool
 
-# Torch's multithreaded behavior needs to be disabled or
-# it wastes a lot of CPU and slow things down.
-# Do this outside of main() in case it needs to take effect
-# even when we are not invoking the main (e.g. when spawning subprocesses).
 torch.set_num_threads(1)
 torch.set_num_interop_threads(1)
 
 @contextmanager
 def get_executor():
-    # We'll either return a process pool or a distributed worker pool.
-    # Note that this has to be a context manager because we might use multiple
-    # context manager ("with" clauses) inside, and this way everything will
-    # free up the resources at the right time.
     try:
-        # If this is executed on the CLSP grid, we will try to use the
-        # Grid Engine to distribute the tasks.
-        # Other clusters can also benefit from that, provided a
-        # cluster-specific wrapper.
-        # (see https://github.com/pzelasko/plz for reference)
-        #
-        # The following must be installed:
-        # $ pip install dask distributed
-        # $ pip install git+https://github.com/pzelasko/plz
+        
         name = subprocess.check_output("hostname -f", shell=True, text=True)
         if name.strip().endswith(".clsp.jhu.edu"):
             import plz
@@ -84,8 +51,7 @@ def get_executor():
             return
     except Exception:
         pass
-    # No need to return anything - compute_and_store_features
-    # will just instantiate the pool itself.
+    
     yield None
 
 
@@ -283,7 +249,7 @@ def compute_fbank_slurp(
     # dataset: Optional[str] = None,
     # perturb_speed: Optional[bool] = True,
 ):
-    src_dir = Path("/disk1/polaris_intent_detection/Prepare_SLURP/data/manifests")  # Path to your SLURP manifests
+    src_dir = Path("/disk1/polaris_intent_detection/Prepare_SLURP/data/manifests")
     output_dir = Path("/disk1/polaris_intent_detection/Prepare_SLURP/data/fbank")
     num_jobs = min(15, os.cpu_count())
     num_mel_bins = 80
@@ -300,8 +266,8 @@ def compute_fbank_slurp(
     else:
         dataset_parts = dataset.split(" ", -1)
 
-    prefix = "slurp"  # Update to match SLURP prefix if different
-    suffix = "jsonl"  # Ensure this matches your manifest file suffix
+    prefix = "slurp" 
+    suffix = "jsonl" 
     manifests = read_manifests_if_cached(
         dataset_parts=dataset_parts,
         output_dir=src_dir,

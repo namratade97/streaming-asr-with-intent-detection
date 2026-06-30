@@ -1,20 +1,4 @@
-# Copyright    2021-2023  Xiaomi Corp.        (authors: Fangjun Kuang,
-#                                                       Wei Kang,
-#                                                       Zengwei Yao)
-#
-# See ../../../../LICENSE for clarification regarding multiple authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# updated for adding focal loss instead of cross entropy
 
 from typing import Optional, Tuple
 
@@ -33,22 +17,14 @@ import re
 
 class FocalLoss(nn.Module):
     def __init__(self, gamma: float = 2.0, alpha: Optional[torch.Tensor] = None, reduction: str = "mean"):
-        """
-        gamma: focusing parameter
-        alpha: tensor of shape (num_classes,) containing class weights
-        reduction: 'mean', 'sum', or 'none'
-        """
+        
         super().__init__()
         self.gamma = gamma
-        self.alpha = alpha  # pass class_weights here
+        self.alpha = alpha  # passing class_weights here
         self.reduction = reduction
 
     def forward(self, logits: torch.Tensor, targets: torch.Tensor, mask: Optional[torch.Tensor] = None):
-        """
-        logits: (batch, num_classes) raw scores
-        targets: (batch,) class indices
-        mask: optional (batch,) boolean to ignore padded frames if using pooled logits
-        """
+ 
         ce_loss = F.cross_entropy(logits, targets, weight=self.alpha, reduction="none")  # (batch,)
         pt = torch.exp(-ce_loss)  # probability of true class
         focal_loss = ((1 - pt) ** self.gamma) * ce_loss  # (batch,)
@@ -185,8 +161,7 @@ class AsrModel(nn.Module):
         joiner: Optional[nn.Module] = None,
         encoder_dim: int = 384,
         decoder_dim: int = 512,
-        # vocab_size: int = 500,
-        vocab_size: int = 592,
+        vocab_size: int = 500,
         use_transducer: bool = True,
         use_ctc: bool = False,
         class_weights: Optional[torch.Tensor] = None, ##### focal loss
@@ -262,7 +237,6 @@ class AsrModel(nn.Module):
                 nn.LogSoftmax(dim=-1),
             )
 
-        ############################intent#####################################
         # layer focusing on intent classification
         self.intent_classifier = nn.Sequential(
                 nn.Linear(encoder_dim, 92),
@@ -273,7 +247,6 @@ class AsrModel(nn.Module):
         #         # nn.ReLU(),
         #         # nn.Linear(128, 92)
         #     )
-        ############################intent#####################################
 
         if class_weights is not None:
             self.focal_loss = FocalLoss(gamma=2.0, alpha=class_weights)
@@ -327,9 +300,7 @@ class AsrModel(nn.Module):
           encoder_out_lens:
             Encoder output lengths, of shape (N,).
         """
-        # logging.info(f"Memory allocated at entry: {torch.cuda.memory_allocated() // 1000000}M")
         x, x_lens = self.encoder_embed(x, x_lens)
-        # logging.info(f"Memory allocated after encoder_embed: {torch.cuda.memory_allocated() // 1000000}M")
 
         src_key_padding_mask = make_pad_mask(x_lens)
         x = x.permute(1, 0, 2)  # (N, T, C) -> (T, N, C)
@@ -337,12 +308,7 @@ class AsrModel(nn.Module):
         encoder_out, encoder_out_lens = self.encoder(x, x_lens, src_key_padding_mask)
         encoder_out = encoder_out.permute(1, 0, 2)  # (T, N, C) ->(N, T, C)
 
-        ############################intent#####################################
-        # map the tokens to indices some_mapping
-        # add masking
-        # masking intent_logits*mask
-        # sum/sum of masks
-
+        
 
         # intent_tokens = [extract_intent_from_supervision(text) for text in supervision_texts]
         intent_tokens = [extract_intent_from_supervision(text) or "▁<unk>" for text in supervision_texts]
@@ -358,20 +324,9 @@ class AsrModel(nn.Module):
         logging.info("intent_logits.shape: %s", intent_logits.shape)
         logging.info("x_lens.shape: %s",x_lens.shape)
 
-        # Create mask to ignore padded frames
-        # max_len = intent_logits.size(1)
-        # mask = torch.arange(max_len, device= encoder_out.device).unsqueeze(0) < x_lens.unsqueeze(1) # Now shape: (N, T)
-        # intent_logits[~mask] = 0  # Set padded logits to zero
         
-        # Compute mean logits over non-padded frames
-        # masked_intent_logits = intent_logits.sum(dim=1)  # Sum over T -> (N, 92)
-        # mean_intent_logits = masked_intent_logits / x_lens[:, None]  # Normalize by valid frames (N, 92)
-
-
         max_len = intent_logits.size(1)
         mask = torch.arange(max_len, device=encoder_out.device).unsqueeze(0) < x_lens.unsqueeze(1)  # (N, T)
-        # intent_logits[~mask] = 0
-        # mean_intent_logits = (intent_logits * mask.unsqueeze(-1)).sum(1) / mask.sum(1, keepdim=True)
         mean_intent_logits = (intent_logits * mask.unsqueeze(-1)).sum(1) / x_lens.unsqueeze(-1)
         
 
@@ -392,7 +347,6 @@ class AsrModel(nn.Module):
         else:
             intent_loss = F.nll_loss(F.log_softmax(mean_intent_logits, dim=1), intent_labels)
             logging.info("USING CROSS ENTROPY LOSS!!")
-        ############################intent#####################################
 
         
         

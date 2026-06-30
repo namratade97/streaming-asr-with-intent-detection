@@ -1402,7 +1402,8 @@ class SwooshL(torch.nn.Module):
         if not x.requires_grad:
             return k2.swoosh_l_forward(x)
         else:
-            return k2.swoosh_l(x)
+            # return k2.swoosh_l(x). ########################
+            return x * (1 - torch.tanh(x)**2)  
         # return SwooshLFunction.apply(x)
 
 
@@ -1476,7 +1477,8 @@ class SwooshR(torch.nn.Module):
         if not x.requires_grad:
             return k2.swoosh_r_forward(x)
         else:
-            return k2.swoosh_r(x)
+            # return k2.swoosh_r(x)
+            return torch.tanh(x) ################################################
         # return SwooshRFunction.apply(x)
 
 
@@ -1533,8 +1535,10 @@ class ActivationDropoutAndLinearFunction(torch.autograd.Function):
         ctx.activation = activation
 
         forward_activation_dict = {
-            "SwooshL": k2.swoosh_l_forward,
-            "SwooshR": k2.swoosh_r_forward,
+            # "SwooshL": k2.swoosh_l_forward,
+            # "SwooshR": k2.swoosh_r_forward,
+            "SwooshL": lambda x: x * (1 - torch.tanh(x)**2),  # left swoosh replacement
+            "SwooshR": lambda x: torch.tanh(x),               # right swoosh replacement
         }
         # it will raise a KeyError if this fails.  This will be an error.  We let it
         # propagate to the user.
@@ -1545,6 +1549,22 @@ class ActivationDropoutAndLinearFunction(torch.autograd.Function):
         x = torch.nn.functional.linear(x, weight, bias)
         return x
 
+    
+    
+    @staticmethod
+    def swoosh_r_forward_and_deriv(x):
+        y = torch.tanh(x)
+        dy_dx = 1 - y**2
+        return y, dy_dx
+
+    @staticmethod
+    def swoosh_l_forward_and_deriv(x):
+        # y = x * (1 - tanh(x)^2)
+        t = torch.tanh(x)
+        y = x * (1 - t**2)
+        dy_dx = (1 - t**2) + x * (-2 * t * (1 - t**2))  # product rule
+        return y, dy_dx
+
     @staticmethod
     @custom_bwd
     def backward(ctx, ans_grad: Tensor):
@@ -1552,8 +1572,10 @@ class ActivationDropoutAndLinearFunction(torch.autograd.Function):
         (x, weight, bias, dropout_mask) = saved
 
         forward_and_deriv_activation_dict = {
-            "SwooshL": k2.swoosh_l_forward_and_deriv,
-            "SwooshR": k2.swoosh_r_forward_and_deriv,
+            # "SwooshL": k2.swoosh_l_forward_and_deriv,
+            # "SwooshR": k2.swoosh_r_forward_and_deriv,
+            "SwooshL": ActivationDropoutAndLinearFunction.swoosh_l_forward_and_deriv,
+            "SwooshR": ActivationDropoutAndLinearFunction.swoosh_r_forward_and_deriv,
         }
         # the following lines a KeyError if the activation is unrecognized.
         # This will be an error.  We let it propagate to the user.
